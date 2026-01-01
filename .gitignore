@@ -1,0 +1,6 @@
+# 가상환경 및 라이브러리 무시
+venv/
+node_modules/
+__pycache__/
+.env
+.DS_Store
