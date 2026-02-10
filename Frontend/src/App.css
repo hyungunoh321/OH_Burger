@@ -1,42 +1,284 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* 전체 배경 및 폰트 설정 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+body {
+  margin: 0;
+  background-color: #FFFDF9; /* 살짝 따뜻한 아이보리 */
+  font-family: 'Noto Sans KR', sans-serif;
+  color: #333;
 }
 
+button { font-family: 'Noto Sans KR', sans-serif; cursor: pointer; }
+
+.app-container {
+  width: 100%;
+}
+
+/* Header */
+.header {
+  background: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: center;
+  padding: 15px 0;
+}
+.header-inner {
+  width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+  font-size: 24px;
+  font-weight: 800;
+  color: #FF6B00; /* 메인 오렌지 컬러 */
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+.nav-menu {
+  display: flex;
+  gap: 40px;
 }
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.nav-menu a {
+  text-decoration: none;
+  color: #555;
+  font-weight: 500;
+  font-size: 16px;
+}
+.nav-menu a:hover, .nav-menu a.active {
+  color: #333;
+  font-weight: 700;
+}
+.user-actions {
+  display: flex;
+  gap: 10px;
+}
+.btn-login {
+  background: none;
+  border: none;
+  color: #777;
+  font-weight: 500;
+  font-size: 14px;
+}
+.btn-mypage {
+  background: #FF6B00;
+  color: white;
+  border: none;
+  border-radius: 20px; /* 둥근 버튼 */
+  padding: 8px 16px;
+  font-weight: 700;
+  font-size: 14px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Search Section */
+.search-section {
+  text-align: center;
+  padding: 60px 0 40px;
+}
+.main-title {
+  color: #FF6B00;
+  font-size: 36px;
+  margin: 0 0 25px 0;
+  font-weight: 800;
+}
+.search-bar-wrapper {
+  width: 580px;
+  height: 54px;
+  background: #fff;
+  border: 2px solid #ddd; /* 살짝 두께감 있는 테두리 */
+  border-radius: 27px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+.search-bar-wrapper input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #555;
+}
+.search-btn {
+  background: #FF6B00;
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Main Layout */
+.main-layout {
+  width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 24px;
+  padding-bottom: 80px;
 }
 
+/* Sidebar */
+.sidebar {
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 .card {
-  padding: 2em;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  text-align: center;
+  padding: 24px;
 }
 
-.read-the-docs {
-  color: #888;
+/* 프로필 카드 */
+.profile-card {
+  background-color: #FFF5EB; /* 연한 살구색 배경 */
+  border: 1px solid #FFE4CC;
 }
+.profile-icon { font-size: 40px; margin-bottom: 10px; }
+.profile-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #666;
+  margin: 0;
+}
+
+/* 사이드바 버튼들 */
+.nav-btn {
+  width: 100%;
+  padding: 16px;
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #444;
+  text-align: left;
+  padding-left: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  transition: all 0.2s;
+}
+.nav-btn:hover {
+  border-color: #FF6B00;
+  color: #FF6B00;
+}
+
+/* 랜덤 카드 */
+.random-card {
+  background: #FFFCF0; /* 아주 연한 노란색 */
+  border: 1px solid #F0E8D0;
+}
+.slot-machine-icons { font-size: 24px; margin-bottom: 15px; letter-spacing: 5px; }
+.btn-random {
+  width: 100%;
+  background: #FF6B00;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+.today-pick {
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid #eee;
+}
+.pick-label { display: block; font-size: 12px; color: #888; margin-bottom: 4px; }
+.pick-menu { display: block; font-size: 16px; color: #FF6B00; }
+
+/* Content (Right Side) */
+.content {
+  flex: 1;
+}
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.content-header h2 { font-size: 20px; font-weight: 800; margin: 0; }
+.sort-select {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  color: #666;
+  font-size: 13px;
+}
+
+/* Ranking Table */
+.ranking-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  padding: 10px 0;
+}
+.table-header {
+  display: flex;
+  padding: 15px 30px;
+  border-bottom: 1px solid #eee;
+  color: #888;
+  font-size: 13px;
+  font-weight: 700;
+}
+.table-row {
+  display: flex;
+  padding: 18px 30px;
+  align-items: center;
+  border-bottom: 1px solid #f9f9f9;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+.table-row:last-child { border-bottom: none; }
+
+/* Grid Columns */
+.col-rank { width: 60px; text-align: center; }
+.col-img { width: 80px; text-align: center; }
+.col-name { flex: 1; font-weight: 700; text-align: left; padding-left: 10px; }
+.col-tier { width: 60px; text-align: center; }
+.col-val { width: 80px; text-align: center; color: #666; font-size: 13px; }
+.col-arrow { width: 30px; text-align: right; color: #ccc; font-size: 18px; }
+
+/* Ranks Styles */
+.rank-circle {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto;
+  font-weight: 700;
+  font-size: 13px;
+}
+.top-rank { background-color: #FF6B00; color: white; }
+.normal-rank { background-color: #eee; color: #888; }
+
+/* Images */
+.img-placeholder {
+  width: 48px; height: 48px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto;
+  font-size: 20px;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  width: 24px; height: 24px;
+  line-height: 24px;
+  border-radius: 6px;
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+}
+.badge-s { background-color: #E53935; } /* Red */
+.badge-a { background-color: #1E88E5; } /* Blue */
+.badge-b { background-color: #43A047; } /* Green */
