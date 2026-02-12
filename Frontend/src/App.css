@@ -282,3 +282,54 @@ button { font-family: 'Noto Sans KR', sans-serif; cursor: pointer; }
 .badge-s { background-color: #E53935; } /* Red */
 .badge-a { background-color: #1E88E5; } /* Blue */
 .badge-b { background-color: #43A047; } /* Green */
+
+/* --- 새로 추가된 스타일 --- */
+
+/* 브랜드 필터 버튼 영역 */
+.brand-filter {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap; /* 화면 좁으면 줄바꿈 */
+}
+
+.brand-btn {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 20px;
+  color: #555;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.brand-btn:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+/* 선택된 버튼 스타일 (주황색) */
+.brand-btn.active {
+  background: #FF6B00;
+  color: white;
+  border-color: #FF6B00;
+  font-weight: 700;
+}
+
+/* 리스트 안에 브랜드 이름 작게 표시 */
+.brand-tag {
+  display: block;
+  font-size: 11px;
+  color: #888;
+  margin-top: 4px;
+  font-weight: normal;
+}
+
+.burger-thumb {
+  width: 50px;
+  height: 50px;
+  border-radius: 6px;
+  object-fit: contain; /* 이미지 비율 유지 */
+}
