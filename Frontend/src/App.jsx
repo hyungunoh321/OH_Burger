@@ -1,19 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios'; // 1. Axios 불러오기
 import './App.css';
 
 function App() {
-  // 디자인과 똑같은 더미 데이터
-  const [burgers] = useState([
-    { id: 1, rank: 1, name: "지거버거", tier: "S", kcal: 750, carbs: 45, protein: 35, fat: 42, img: "🍔" },
-    { id: 2, rank: 2, name: "버거킹 와퍼", tier: "S", kcal: 680, carbs: 52, protein: 30, fat: 38, img: "🍔" },
-    { id: 3, rank: 3, name: "맥도날드 빅맥", tier: "A", kcal: 563, carbs: 46, protein: 26, fat: 33, img: "🍔" },
-    { id: 4, rank: 4, name: "쉑쉑버거", tier: "A", kcal: 590, carbs: 41, protein: 28, fat: 36, img: "🍔" },
-    { id: 5, rank: 5, name: "파이브가이즈", tier: "A", kcal: 840, carbs: 48, protein: 42, fat: 52, img: "🍔" },
-    { id: 6, rank: 6, name: "롯데리아 불고기버거", tier: "B", kcal: 480, carbs: 44, protein: 22, fat: 24, img: "🍔" },
-    { id: 7, rank: 7, name: "모스버거", tier: "B", kcal: 520, carbs: 47, protein: 24, fat: 28, img: "🍔" },
-    { id: 8, rank: 8, name: "크라제버거", tier: "B", kcal: 645, carbs: 43, protein: 31, fat: 38, img: "🍔" },
-  ]);
+  // 2. 처음엔 빈 배열로 시작 (데이터 오기 전)
+  const [burgers, setBurgers] = useState([]);
 
+  // 3. 화면이 켜지면 딱 한 번 실행되는 함수
+  useEffect(() => {
+    axios.get("http://localhost:8000/burgers") // 백엔드 주소로 요청
+      .then((response) => {
+        // 성공하면 실행
+        console.log("데이터 가져오기 성공!", response.data);
+        
+        // DB 컬럼명(영어)을 프론트엔드 변수명으로 매칭해주기
+        const formattedData = response.data.map((burger, index) => ({
+          ...burger,
+          rank: index + 1,          // 랭킹은 순서대로 1, 2, 3... 부여
+          kcal: burger.calories,    // DB: calories -> Front: kcal
+          img: burger.image_url || "🍔" // 이미지가 없으면 기본 아이콘
+        }));
+
+        setBurgers(formattedData); // 가져온 데이터를 상태에 저장!
+      })
+      .catch((error) => {
+        console.error("데이터 가져오기 실패 ㅠㅠ", error);
+      });
+  }, []);
+
+  // 티어별 색상 함수
   const getTierClass = (tier) => {
     if (tier === 'S') return 'badge-s';
     if (tier === 'A') return 'badge-a';
@@ -51,7 +66,6 @@ function App() {
       <main className="main-layout">
         {/* 왼쪽 사이드바 */}
         <aside className="sidebar">
-          {/* 프로필 카드 */}
           <div className="card profile-card">
             <div className="profile-icon">🍔</div>
             <p className="profile-text">
@@ -60,12 +74,8 @@ function App() {
               소개해줄게!!
             </p>
           </div>
-          
-          {/* 네비게이션 버튼 */}
           <button className="nav-btn">📍 근처 맛집 보러가기</button>
           <button className="nav-btn">👨‍🍳 추천 레시피 보기</button>
-
-          {/* 랜덤 메뉴 카드 */}
           <div className="card random-card">
             <div className="slot-machine-icons">🍔 🍟 🍔</div>
             <button className="btn-random">🔀 랜덤 햄버거 메뉴 정하기</button>
@@ -100,23 +110,33 @@ function App() {
             </div>
             
             <div className="table-body">
-              {burgers.map((burger) => (
-                <div key={burger.id} className="table-row">
-                  <span className="col-rank">
-                    <div className={`rank-circle ${burger.rank <= 3 ? 'top-rank' : 'normal-rank'}`}>
-                      {burger.rank}
-                    </div>
-                  </span>
-                  <span className="col-img"><div className="img-placeholder">{burger.img}</div></span>
-                  <span className="col-name">{burger.name}</span>
-                  <span className="col-tier"><span className={`badge ${getTierClass(burger.tier)}`}>{burger.tier}</span></span>
-                  <span className="col-val">{burger.kcal}kcal</span>
-                  <span className="col-val">{burger.carbs}g</span>
-                  <span className="col-val">{burger.protein}g</span>
-                  <span className="col-val">{burger.fat}g</span>
-                  <span className="col-arrow">›</span>
-                </div>
-              ))}
+              {burgers.length > 0 ? (
+                burgers.map((burger) => (
+                  <div key={burger.id} className="table-row">
+                    <span className="col-rank">
+                      <div className={`rank-circle ${burger.rank <= 3 ? 'top-rank' : 'normal-rank'}`}>
+                        {burger.rank}
+                      </div>
+                    </span>
+                    <span className="col-img">
+                      {/* 이미지가 http로 시작하면 진짜 이미지 태그를, 아니면 이모지 출력 */}
+                      {burger.img.startsWith('http') ? 
+                        <img src={burger.img} alt={burger.name} style={{width:'40px', borderRadius:'4px'}} /> 
+                        : <div className="img-placeholder">{burger.img}</div>
+                      }
+                    </span>
+                    <span className="col-name">{burger.name}</span>
+                    <span className="col-tier"><span className={`badge ${getTierClass(burger.tier)}`}>{burger.tier}</span></span>
+                    <span className="col-val">{burger.kcal}kcal</span>
+                    <span className="col-val">{burger.carbs}g</span>
+                    <span className="col-val">{burger.protein}g</span>
+                    <span className="col-val">{burger.fat}g</span>
+                    <span className="col-arrow">›</span>
+                  </div>
+                ))
+              ) : (
+                <div style={{padding: "20px", textAlign: "center"}}>데이터를 불러오는 중입니다... (혹시 서버 켜셨나요?)</div>
+              )}
             </div>
           </div>
         </section>
