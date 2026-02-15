@@ -5,26 +5,75 @@ import './App.css';
 function App() {
   const [burgers, setBurgers] = useState([]);
   const [selectedBrand, setSelectedBrand] = useState("전체");
+  const [sortOption, setSortOption] = useState("인기순");
+  
+  const [randomPick, setRandomPick] = useState("로딩중...");
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const brands = ["전체", "맥도날드", "버거킹", "맘스터치", "롯데리아", "KFC", "노브랜드버거"];
 
   useEffect(() => {
     axios.get("http://localhost:8000/burgers")
       .then((response) => {
-        const formattedData = response.data.map((burger, index) => ({
+        const formattedData = response.data.map((burger) => ({
           ...burger,
-          rank: index + 1,
           kcal: burger.calories,
           img: burger.image_url || "🍔"
         }));
         setBurgers(formattedData);
+        
+        if (formattedData.length > 0) {
+          const randomIndex = Math.floor(Math.random() * formattedData.length);
+          setRandomPick(formattedData[randomIndex].name);
+        }
       })
       .catch((error) => console.error("데이터 로딩 실패:", error));
   }, []);
 
-  const filteredBurgers = selectedBrand === "전체" 
-    ? burgers 
+  let displayBurgers = selectedBrand === "전체" 
+    ? [...burgers] 
     : burgers.filter(burger => burger.brand.includes(selectedBrand) || burger.brand === selectedBrand);
+
+  const tierScore = { 'S': 3, 'A': 2, 'B': 1 };
+
+  displayBurgers.sort((a, b) => {
+    if (sortOption === "인기순") {
+      return tierScore[b.tier] - tierScore[a.tier];
+    } else if (sortOption === "칼로리순") {
+      return b.kcal - a.kcal;
+    } else if (sortOption === "탄수화물순") {
+      return b.carbs - a.carbs;
+    } else if (sortOption === "단백질순") {
+      return b.protein - a.protein;
+    } else if (sortOption === "지방순") {
+      return b.fat - a.fat;
+    }
+    return 0;
+  });
+
+  displayBurgers = displayBurgers.map((burger, index) => ({
+    ...burger,
+    rank: index + 1
+  }));
+
+  // 🔥 랜덤 버튼 클릭 함수 (소리 재생 추가!)
+  const handleRandomClick = () => {
+    if (burgers.length > 0) {
+      // 1) 띵! 소리 재생 (무료 효과음 URL 사용)
+      const dingSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3");
+      dingSound.play();
+
+      // 2) 랜덤 메뉴 뽑기
+      const randomIndex = Math.floor(Math.random() * burgers.length);
+      setRandomPick(burgers[randomIndex].name);
+      
+      // 3) 점프 애니메이션 실행
+      setIsAnimating(true);
+      setTimeout(() => {
+        setIsAnimating(false);
+      }, 700);
+    }
+  };
 
   const getTierClass = (tier) => {
     if (tier === 'S') return 'badge-s';
@@ -40,8 +89,8 @@ function App() {
           <nav className="nav-menu">
             <a href="#" className="active">햄버거 목록</a>
             <a href="#">햄버거 맛집</a>
-            <a href="#">추천 레시피</a> {/* 유지 */}
-            <a href="#">리뷰게시판</a> {/* 유지 */}
+            <a href="#">추천 레시피</a>
+            <a href="#">리뷰게시판</a>
           </nav>
           <div className="user-actions">
             <button className="btn-login">➜] 로그인</button>
@@ -70,16 +119,21 @@ function App() {
           </div>
           
           <button className="nav-btn">📍 근처 맛집 보러가기</button>
-          <button className="nav-btn">👨‍🍳 추천 레시피 보기</button> {/* 유지 */}
+          <button className="nav-btn">👨‍🍳 추천 레시피 보기</button>
           
           <div className="card random-card">
-            <div className="slot-machine-icons">🍔 🍟 🍔</div>
-            <button className="btn-random">🔀 랜덤 메뉴 추천</button>
+            <div className={`slot-machine-icons ${isAnimating ? 'is-jumping' : ''}`}>
+              <span>🍔</span>
+              <span>🍟</span>
+              <span>🍔</span>
+            </div>
+            
+            <button className="btn-random" onClick={handleRandomClick}>
+              🔀 랜덤 메뉴 추천
+            </button>
             <div className="today-pick">
               <span className="pick-label">오늘의 추천 메뉴는</span>
-              <strong className="pick-menu">
-                {burgers.length > 0 ? burgers[Math.floor(Math.random() * burgers.length)].name : "로딩중..."}
-              </strong>
+              <strong className="pick-menu">{randomPick}</strong>
             </div>
           </div>
         </aside>
@@ -87,9 +141,16 @@ function App() {
         <section className="content">
           <div className="content-header">
             <h2>햄버거 랭킹</h2>
-            <select className="sort-select">
-              <option>인기순</option>
-              <option>칼로리순</option>
+            <select 
+              className="sort-select" 
+              value={sortOption} 
+              onChange={(e) => setSortOption(e.target.value)}
+            >
+              <option value="인기순">인기순 (티어순)</option>
+              <option value="칼로리순">칼로리순 (높은순)</option>
+              <option value="탄수화물순">탄수화물순 (높은순)</option>
+              <option value="단백질순">단백질순 (높은순)</option>
+              <option value="지방순">지방순 (높은순)</option>
             </select>
           </div>
 
@@ -112,15 +173,15 @@ function App() {
               <span className="col-name">이름 (브랜드)</span>
               <span className="col-tier">티어</span>
               <span className="col-val">칼로리</span>
-              <span className="col-val">탄수화물</span> {/* ✅ 복구 */}
+              <span className="col-val">탄수화물</span>
               <span className="col-val">단백질</span>
-              <span className="col-val">지방</span>     {/* ✅ 복구 */}
+              <span className="col-val">지방</span>
               <span className="col-arrow"></span>
             </div>
             
             <div className="table-body">
-              {filteredBurgers.length > 0 ? (
-                filteredBurgers.map((burger) => (
+              {displayBurgers.length > 0 ? (
+                displayBurgers.map((burger) => (
                   <div key={burger.id} className="table-row">
                     <span className="col-rank">
                       <div className={`rank-circle ${burger.rank <= 3 ? 'top-rank' : 'normal-rank'}`}>
@@ -139,11 +200,10 @@ function App() {
                     </span>
                     <span className="col-tier"><span className={`badge ${getTierClass(burger.tier)}`}>{burger.tier}</span></span>
                     
-                    {/* 👇 여기 데이터 칸도 다시 복구했습니다! */}
                     <span className="col-val">{burger.kcal}kcal</span>
-                    <span className="col-val">{burger.carbs}g</span> {/* ✅ 복구 */}
+                    <span className="col-val">{burger.carbs}g</span>
                     <span className="col-val">{burger.protein}g</span>
-                    <span className="col-val">{burger.fat}g</span>   {/* ✅ 복구 */}
+                    <span className="col-val">{burger.fat}g</span>
                     
                     <span className="col-arrow">›</span>
                   </div>

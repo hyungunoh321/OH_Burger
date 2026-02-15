@@ -333,3 +333,25 @@ button { font-family: 'Noto Sans KR', sans-serif; cursor: pointer; }
   border-radius: 6px;
   object-fit: contain; /* 이미지 비율 유지 */
 }
+
+/* 🔥 슬롯머신 이모티콘 점프 애니메이션 추가 */
+@keyframes jump {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); } /* 위로 15px 튀어오름 */
+}
+
+.slot-machine-icons span {
+  display: inline-block; /* 이모티콘이 움직이려면 inline-block이어야 함 */
+  font-size: 30px;
+  margin: 0 5px;
+}
+
+/* is-jumping 클래스가 붙었을 때만 애니메이션 실행 */
+.slot-machine-icons.is-jumping span {
+  animation: jump 0.5s ease;
+}
+
+/* 파도타기 효과를 위해 순서대로 딜레이 주기 */
+.slot-machine-icons.is-jumping span:nth-child(1) { animation-delay: 0s; }
+.slot-machine-icons.is-jumping span:nth-child(2) { animation-delay: 0.1s; }
+.slot-machine-icons.is-jumping span:nth-child(3) { animation-delay: 0.2s; }

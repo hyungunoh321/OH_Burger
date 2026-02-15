@@ -4,6 +4,8 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 
+# 가상환경 설정 명령어 venv\Scripts\activate
+# 서버 실행 명령어 uvicorn main:app --reload
 # 1. 데이터베이스 연결 설정
 # 주의: 'root:1234' 부분에 본인 MySQL 비밀번호를 넣으세요!
 SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:0000@localhost:3306/OH_Burger"
