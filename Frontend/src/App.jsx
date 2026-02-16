@@ -9,6 +9,9 @@ function App() {
   
   const [randomPick, setRandomPick] = useState("로딩중...");
   const [isAnimating, setIsAnimating] = useState(false);
+  
+  // 🔥 1. 검색어를 기억할 상태(State) 추가
+  const [searchTerm, setSearchTerm] = useState("");
 
   const brands = ["전체", "맥도날드", "버거킹", "맘스터치", "롯데리아", "KFC", "노브랜드버거"];
 
@@ -30,44 +33,50 @@ function App() {
       .catch((error) => console.error("데이터 로딩 실패:", error));
   }, []);
 
+  // ==========================================
+  // 🧠 데이터 가공 (필터링 -> 검색 -> 정렬 -> 순위)
+  // ==========================================
+
+  // 1. 브랜드 필터링
   let displayBurgers = selectedBrand === "전체" 
     ? [...burgers] 
     : burgers.filter(burger => burger.brand.includes(selectedBrand) || burger.brand === selectedBrand);
 
+  // 🔥 2. 검색어 필터링 (사용자가 입력한 글자가 포함된 햄버거만 남기기)
+  if (searchTerm.trim() !== "") {
+    displayBurgers = displayBurgers.filter(burger => 
+      burger.name.includes(searchTerm) || burger.brand.includes(searchTerm)
+    );
+  }
+
+  // 3. 정렬 로직
   const tierScore = { 'S': 3, 'A': 2, 'B': 1 };
 
   displayBurgers.sort((a, b) => {
-    if (sortOption === "인기순") {
-      return tierScore[b.tier] - tierScore[a.tier];
-    } else if (sortOption === "칼로리순") {
-      return b.kcal - a.kcal;
-    } else if (sortOption === "탄수화물순") {
-      return b.carbs - a.carbs;
-    } else if (sortOption === "단백질순") {
-      return b.protein - a.protein;
-    } else if (sortOption === "지방순") {
-      return b.fat - a.fat;
-    }
+    if (sortOption === "인기순") return tierScore[b.tier] - tierScore[a.tier];
+    if (sortOption === "칼로리순") return b.kcal - a.kcal;
+    if (sortOption === "탄수화물순") return b.carbs - a.carbs;
+    if (sortOption === "단백질순") return b.protein - a.protein;
+    if (sortOption === "지방순") return b.fat - a.fat;
     return 0;
   });
 
+  // 4. 순위 매기기
   displayBurgers = displayBurgers.map((burger, index) => ({
     ...burger,
     rank: index + 1
   }));
 
-  // 🔥 랜덤 버튼 클릭 함수 (소리 재생 추가!)
+  // ==========================================
+
   const handleRandomClick = () => {
     if (burgers.length > 0) {
-      // 1) 띵! 소리 재생 (무료 효과음 URL 사용)
       const dingSound = new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3");
       dingSound.play();
 
-      // 2) 랜덤 메뉴 뽑기
       const randomIndex = Math.floor(Math.random() * burgers.length);
       setRandomPick(burgers[randomIndex].name);
       
-      // 3) 점프 애니메이션 실행
       setIsAnimating(true);
       setTimeout(() => {
         setIsAnimating(false);
@@ -102,7 +111,13 @@ function App() {
       <div className="search-section">
         <h1 className="main-title">OH! Burger!</h1>
         <div className="search-bar-wrapper">
-          <input type="text" placeholder="궁금한 햄버거를 검색해보세요!" />
+          {/* 🔥 3. 검색창에 onChange 이벤트 연결 */}
+          <input 
+            type="text" 
+            placeholder="궁금한 햄버거를 검색해보세요!" 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
           <button className="search-btn">🔍</button>
         </div>
       </div>
@@ -189,7 +204,7 @@ function App() {
                       </div>
                     </span>
                     <span className="col-img">
-                      {burger.img.startsWith('http') ? 
+                      {(burger.img.startsWith('http') || burger.img.startsWith('/')) ? 
                         <img src={burger.img} alt={burger.name} className="burger-thumb" /> 
                         : <div className="img-placeholder">{burger.img}</div>
                       }
@@ -210,7 +225,7 @@ function App() {
                 ))
               ) : (
                 <div style={{padding: "40px", textAlign: "center", color: "#888"}}>
-                  해당 브랜드의 햄버거 데이터가 없습니다 ㅠㅠ
+                  검색 결과가 없습니다 ㅠㅠ 다른 햄버거를 찾아보세요!
                 </div>
               )}
             </div>
