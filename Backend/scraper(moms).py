@@ -16,7 +16,7 @@ def scrape_bulletproof_momstouch():
     print("🚀 [최종 진화] 맘스터치 스크래핑 불도저 모드 가동!!!")
     
     # 🔥 작성자님이 찾아내신 '진짜' 최신 완벽 주소를 아예 고정해버렸습니다! (입력창 삭제)
-    target_url = "https://momstouch.co.kr/menu/new.php?pageNo=1&field=&keyword=&v_sect=&s_gubun=&s_level=&s_gender=&s_sect1=CG0005&s_sect2=&s_order="
+    target_url = "https://momstouch.co.kr/menu/new.php?pageNo=3&field=&keyword=&v_sect=&s_gubun=&s_level=&s_gender=&s_sect1=CG0005&s_sect2=&s_order="
 
     options = webdriver.ChromeOptions()
     # options.add_argument('--headless') # 크롬 창 안 띄우려면 주석 해제
