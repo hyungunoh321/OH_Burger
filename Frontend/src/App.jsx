@@ -50,7 +50,7 @@ function App() {
   }
 
   // 3. 정렬 로직
-  const tierScore = { 'S': 3, 'A': 2, 'B': 1 };
+  const tierScore = { 'S': 4, 'A': 3, 'B': 2, 'C': 1 }; // S를 4점으로, C를 1점으로
 
   displayBurgers.sort((a, b) => {
     if (sortOption === "인기순") return tierScore[b.tier] - tierScore[a.tier];
@@ -84,10 +84,11 @@ function App() {
     }
   };
 
-  const getTierClass = (tier) => {
-    if (tier === 'S') return 'badge-s';
-    if (tier === 'A') return 'badge-a';
-    return 'badge-b';
+const getTierClass = (tier) => {
+    if (tier === 'S') return 'badge-s'; // 빨강
+    if (tier === 'A') return 'badge-a'; // 파랑 (또는 보라)
+    if (tier === 'B') return 'badge-b'; // 초록
+    return 'badge-c';                   // 그 외(C)는 노란색
   };
 
   return (

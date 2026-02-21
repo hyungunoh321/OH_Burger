@@ -279,9 +279,28 @@ button { font-family: 'Noto Sans KR', sans-serif; cursor: pointer; }
   font-weight: 700;
   font-size: 12px;
 }
-.badge-s { background-color: #E53935; } /* Red */
-.badge-a { background-color: #1E88E5; } /* Blue */
-.badge-b { background-color: #43A047; } /* Green */
+/* App.css 파일 어딘가에 추가 */
+
+.badge-s {
+  background-color: #ef4444; /* 강렬한 빨강 */
+  color: white;
+}
+
+.badge-a {
+  background-color: #3b82f6; /* 쨍한 파랑 */
+  color: white;
+}
+
+.badge-b {
+  background-color: #22c55e; /* 산뜻한 초록 */
+  color: white;
+}
+
+/* 🔥 C등급 전용 색상 추가 (회색) */
+.badge-c {
+  background-color: #f59e0b; /* Amber-500 (진한 노랑/오렌지) */
+  color: white;
+}
 
 /* --- 새로 추가된 스타일 --- */
 
