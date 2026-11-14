@@ -66,7 +66,8 @@
 
     <div class="row">
       <%-- 추천 토글(B-03): 누르면 새로고침 없이 서버에 요청하고 최신 추천 수로 바꾼다 --%>
-      <button class="btn big ${liked ? 'on' : ''}" id="like" type="button" aria-pressed="${liked}">👍 추천 <b id="likes">${burger.likeCount}</b></button>
+      <button class="btn big ${liked ? 'on' : ''}" id="like" type="button" aria-pressed="${liked}"
+              data-url="${ctx}/burgers/like" data-id="${burger.id}">👍 추천 <b id="likes">${burger.likeCount}</b></button>
       <span class="hint">조회 <fmt:formatNumber value="${burger.viewCount}" pattern="#,###" /></span>
     </div>
     <c:url var="loginUrl" value="/login"><c:param name="next" value="/burgers/detail?id=${burger.id}" /></c:url>
@@ -89,7 +90,7 @@
         <td><span class="cat">${p.categoryLabel}</span></td>
         <td class="title">
           <a href="${ctx}/posts/detail?id=${p.id}"><c:out value="${p.title}" /></a>
-          <span class="cnt">[${p.commentCount}]</span>
+          <c:if test="${p.commentCount > 0}"><span class="cnt">[${p.commentCount}]</span></c:if>
         </td>
         <td class="hide-sm"><c:out value="${p.nickname}" /></td>
         <td>👍 ${p.likeCount}</td>
@@ -101,37 +102,6 @@
   </table>
 </div>
 
-<script>
-  (function () {
-    var btn = document.getElementById('like');
-    var loginMsg = document.getElementById('like-login');
-    var errorMsg = document.getElementById('like-error');
-
-    btn.addEventListener('click', function () {
-      btn.disabled = true; // 응답이 오기 전에 또 누르지 못하게
-      loginMsg.hidden = true;
-      errorMsg.hidden = true;
-
-      fetch('${ctx}/burgers/like', {
-        method: 'POST',
-        headers: { 'X-Requested-With': 'fetch', 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'id=${burger.id}'
-      }).then(function (res) {
-        if (res.status === 401) { loginMsg.hidden = false; return null; } // 비회원: 로그인 안내
-        if (!res.ok) { throw new Error('HTTP ' + res.status); }
-        return res.json();
-      }).then(function (data) {
-        if (!data) return;
-        btn.classList.toggle('on', data.liked);
-        btn.setAttribute('aria-pressed', data.liked);
-        document.getElementById('likes').textContent = data.likeCount;
-      }).catch(function () {
-        errorMsg.hidden = false;
-      }).then(function () {
-        btn.disabled = false;
-      });
-    });
-  })();
-</script>
+<script src="${ctx}/js/like.js"></script>
 
 <jsp:include page="/WEB-INF/views/footer.jsp" />
