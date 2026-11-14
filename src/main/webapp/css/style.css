@@ -170,6 +170,10 @@ label.field > span.hint, label.field > span.error { font-weight: 400; margin: 4p
 .row.end { justify-content: flex-end; }
 .row.between { justify-content: space-between; }
 
+/* 오류 화면 (404 · 403 · 500) */
+.error-page { text-align: center; padding: 56px 0; }
+.error-page .code { font-size: 88px; font-weight: 800; line-height: 1; color: var(--brand); margin-bottom: 12px; }
+
 /* 로그인 · 회원가입 */
 .narrow { max-width: 400px; margin: 24px auto; }
 
