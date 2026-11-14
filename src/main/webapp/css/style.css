@@ -84,6 +84,8 @@ label.field > span { display: block; font-weight: 700; margin-bottom: 6px; }
   background: var(--surface); cursor: pointer; font-size: 14px;
 }
 .chip.on { background: var(--header); border-color: var(--header); color: #fff; }
+.chip input { display: none; } /* 체크박스를 칩 모양으로 쓸 때 */
+.chip:has(input:checked) { background: var(--header); border-color: var(--header); color: #fff; }
 .tag { display: inline-block; padding: 2px 9px; border-radius: 999px; background: #fff1e8; color: var(--brand-dark); font-size: 13px; }
 .cat { display: inline-block; padding: 1px 8px; border-radius: 6px; background: #efe8dc; font-size: 13px; color: var(--muted); }
 

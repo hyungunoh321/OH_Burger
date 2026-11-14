@@ -9,5 +9,7 @@
   </welcome-file-list>
   <session-config>
     <session-timeout>30</session-timeout>
+    <!-- 주소에 ;jsessionid= 가 붙지 않게 세션은 쿠키로만 추적한다 -->
+    <tracking-mode>COOKIE</tracking-mode>
   </session-config>
 </web-app>

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:set var="ctx" value="${pageContext.request.contextPath}" />
+<%-- include 한 화면에서도 쓸 수 있게 request 범위에 둔다 --%>
+<c:set var="ctx" value="${pageContext.request.contextPath}" scope="request" />
 <!DOCTYPE html>
 <html lang="ko">
 <head>
