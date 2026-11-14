@@ -43,7 +43,9 @@ main.container { padding-top: 28px; padding-bottom: 56px; min-height: 70vh; }
 .nav a { padding: 8px 12px; border-radius: 8px; color: #d9cfc2; white-space: nowrap; }
 .nav a:hover { color: #fff; }
 .nav a.active { background: rgba(255, 255, 255, 0.12); color: #fff; font-weight: 700; }
-.auth { display: flex; gap: 8px; white-space: nowrap; }
+.auth { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.auth form { margin: 0; }
+.auth .who { font-size: 14px; color: #fff; max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
 .site-footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; padding: 20px 0; text-align: center; }
 
 /* 공통 요소 */
@@ -72,6 +74,9 @@ textarea.input { min-height: 220px; resize: vertical; }
 label.field { display: block; margin-bottom: 16px; }
 label.field > span { display: block; font-weight: 700; margin-bottom: 6px; }
 .hint { color: var(--muted); font-size: 13px; }
+.error { color: var(--tier-s); font-size: 13px; }
+.notice { padding: 10px 12px; border-radius: 8px; background: #ebfbee; color: #2b8a3e; font-size: 14px; }
+label.field > span.hint, label.field > span.error { font-weight: 400; margin: 4px 0 0; }
 
 .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 16px; }
 .toolbar .grow { flex: 1; min-width: 180px; }
@@ -180,7 +185,7 @@ label.field > span { display: block; font-weight: 700; margin-bottom: 6px; }
 
 @media (max-width: 760px) {
   .site-header .container { gap: 12px; }
-  .auth .btn:last-child { display: none; }
+  .auth > a.btn:last-child { display: none; } /* 좁은 화면에서는 회원가입 버튼을 숨긴다 */
   .detail, .roulette { grid-template-columns: 1fr; }
   .tier-label { width: 48px; font-size: 22px; }
   .tier-item { width: calc(50% - 4px); }
