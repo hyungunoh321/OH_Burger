@@ -6,3 +6,5 @@ src/main/java/db.properties
 .metadata/
 bin/
 *.class
+# 이 PC 전용 Claude 메모 (비밀번호 포함)
+CLAUDE.local.md
