@@ -12,13 +12,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import ohburger.common.Auth;
 import ohburger.dao.BurgerDao;
+import ohburger.dao.BurgerLikeDao;
 import ohburger.dao.PostDao;
 import ohburger.dao.TierDao;
 import ohburger.model.Burger;
+import ohburger.model.LoginMember;
 import ohburger.model.Metric;
 
-/** 버거 상세 (B-02): 기본 · 영양 정보, 티어 배지 4종, 태그된 게시글 상위 5개. */
+/** 버거 상세 (B-02): 기본 · 영양 정보, 티어 배지 4종, 추천 상태, 태그된 게시글 상위 5개. */
 @WebServlet("/burgers/detail")
 public class BurgerDetailServlet extends HttpServlet {
 
@@ -31,6 +34,7 @@ public class BurgerDetailServlet extends HttpServlet {
     private final BurgerDao burgerDao = new BurgerDao();
     private final TierDao tierDao = new TierDao();
     private final PostDao postDao = new PostDao();
+    private final BurgerLikeDao likeDao = new BurgerLikeDao();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -53,6 +57,9 @@ public class BurgerDetailServlet extends HttpServlet {
                 burgerDao.increaseViewCount(id);
                 burger.setViewCount(burger.getViewCount() + 1);
             }
+            // 로그인한 회원이면 이 버거를 추천했는지 알려 줘서 버튼을 눌린 모양으로 그린다
+            LoginMember member = Auth.current(req);
+            req.setAttribute("liked", member != null && likeDao.isLiked(member.getId(), id));
             req.setAttribute("burger", burger);
             req.setAttribute("metrics", Metric.values());
             req.setAttribute("tiers", tierDao.tiersOf(id));

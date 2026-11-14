@@ -65,10 +65,13 @@
     </table>
 
     <div class="row">
-      <%-- 추천 토글(B-03)은 로그인 구현 뒤에 연결한다. 지금은 추천 수만 보여 준다 --%>
-      <button class="btn big" id="like" type="button" disabled title="로그인 기능 구현 후 사용할 수 있습니다">👍 추천 <b id="likes">${burger.likeCount}</b></button>
+      <%-- 추천 토글(B-03): 누르면 새로고침 없이 서버에 요청하고 최신 추천 수로 바꾼다 --%>
+      <button class="btn big ${liked ? 'on' : ''}" id="like" type="button" aria-pressed="${liked}">👍 추천 <b id="likes">${burger.likeCount}</b></button>
       <span class="hint">조회 <fmt:formatNumber value="${burger.viewCount}" pattern="#,###" /></span>
     </div>
+    <c:url var="loginUrl" value="/login"><c:param name="next" value="/burgers/detail?id=${burger.id}" /></c:url>
+    <p class="hint" id="like-login" hidden>추천하려면 로그인이 필요합니다. <a href="${loginUrl}" style="color:var(--brand)">로그인하러 가기</a></p>
+    <p class="error" id="like-error" hidden>추천을 처리하지 못했습니다. 잠시 뒤에 다시 시도해 주세요.</p>
   </div>
 </div>
 
@@ -97,5 +100,38 @@
     </c:if>
   </table>
 </div>
+
+<script>
+  (function () {
+    var btn = document.getElementById('like');
+    var loginMsg = document.getElementById('like-login');
+    var errorMsg = document.getElementById('like-error');
+
+    btn.addEventListener('click', function () {
+      btn.disabled = true; // 응답이 오기 전에 또 누르지 못하게
+      loginMsg.hidden = true;
+      errorMsg.hidden = true;
+
+      fetch('${ctx}/burgers/like', {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'fetch', 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'id=${burger.id}'
+      }).then(function (res) {
+        if (res.status === 401) { loginMsg.hidden = false; return null; } // 비회원: 로그인 안내
+        if (!res.ok) { throw new Error('HTTP ' + res.status); }
+        return res.json();
+      }).then(function (data) {
+        if (!data) return;
+        btn.classList.toggle('on', data.liked);
+        btn.setAttribute('aria-pressed', data.liked);
+        document.getElementById('likes').textContent = data.likeCount;
+      }).catch(function () {
+        errorMsg.hidden = false;
+      }).then(function () {
+        btn.disabled = false;
+      });
+    });
+  })();
+</script>
 
 <jsp:include page="/WEB-INF/views/footer.jsp" />
