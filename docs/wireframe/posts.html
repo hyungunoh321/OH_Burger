@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OH Burger - 게시판</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="container">
+  <h1 class="page-title">게시판</h1>
+  <p class="page-desc">꿀조합과 꿀팁을 공유해 보세요.</p>
+
+  <div class="tabs" id="cats"></div>
+
+  <div class="toolbar">
+    <div class="grow"><input class="input" id="q" type="search" placeholder="제목 + 내용 검색"></div>
+    <select class="input" id="sort">
+      <option value="new">최신순</option>
+      <option value="likes">추천순</option>
+    </select>
+    <a class="btn primary" href="write.html">글쓰기</a>
+  </div>
+
+  <div class="card">
+    <table class="list">
+      <thead>
+        <tr><th>분류</th><th>제목</th><th class="hide-sm">작성자</th><th class="hide-sm">작성일</th><th class="hide-sm">조회</th><th>추천</th></tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+
+  <div class="pager"><a href="#">‹</a><a class="on" href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">›</a></div>
+</main>
+
+<script src="js/common.js"></script>
+<script>
+  layout('posts.html');
+
+  let cat = '전체';
+
+  function render() {
+    const q = document.getElementById('q').value.trim();
+    const sort = document.getElementById('sort').value;
+
+    document.getElementById('cats').innerHTML = ['전체', '꿀조합', '꿀팁', '자유']
+      .map(c => `<button class="tab ${c === cat ? 'on' : ''}" data-c="${c}">${c}</button>`).join('');
+
+    const items = POSTS
+      .filter(p => cat === '전체' || p.cat === cat)
+      .filter(p => p.title.includes(q))
+      .sort((a, b) => (sort === 'likes' ? b.likes - a.likes : b.id - a.id));
+
+    document.getElementById('rows').innerHTML = items.map(p => `<tr>
+      <td><span class="cat">${p.cat}</span></td>
+      <td class="title">
+        <a href="post.html?id=${p.id}">${p.title}</a> <span class="cnt">[${p.comments}]</span>
+        ${p.burgers.map(id => `<span class="tag">${byId(id).name}</span>`).join(' ')}
+      </td>
+      <td class="hide-sm">${p.writer}</td>
+      <td class="hide-sm">${p.date}</td>
+      <td class="hide-sm">${p.views}</td>
+      <td>${p.likes}</td>
+    </tr>`).join('') || '<tr><td colspan="6" class="hint">게시글이 없습니다.</td></tr>';
+  }
+
+  document.getElementById('cats').addEventListener('click', e => {
+    if (e.target.dataset.c) { cat = e.target.dataset.c; render(); }
+  });
+  ['q', 'sort'].forEach(id => document.getElementById(id).addEventListener('input', render));
+  render();
+</script>
+</body>
+</html>

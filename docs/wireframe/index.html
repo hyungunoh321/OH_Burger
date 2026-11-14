@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OH Burger - 버거 티어표</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="container">
+  <h1 class="page-title">버거 티어표</h1>
+  <p class="page-desc">국내 프랜차이즈 7곳의 버거를 기준별로 줄 세웠습니다. <span id="note"></span></p>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="toolbar">
+    <div class="chips grow" id="brands"></div>
+    <button class="btn" id="dir">S 티어부터 ▼</button>
+  </div>
+
+  <div id="tiers"></div>
+</main>
+
+<script src="js/common.js"></script>
+<script>
+  layout('index.html');
+
+  let metric = 'popularity';
+  let brand = '전체';
+  let reversed = false;
+
+  function render() {
+    const m = METRICS[metric];
+    document.getElementById('note').textContent = '기준: ' + m.note;
+    document.getElementById('tabs').innerHTML = Object.entries(METRICS)
+      .map(([k, v]) => `<button class="tab ${k === metric ? 'on' : ''}" data-k="${k}">${v.label}</button>`).join('');
+    document.getElementById('brands').innerHTML = ['전체', ...BRANDS]
+      .map(b => `<button class="chip ${b === brand ? 'on' : ''}" data-b="${b}">${b}</button>`).join('');
+    document.getElementById('dir').textContent = reversed ? 'D 티어부터 ▲' : 'S 티어부터 ▼';
+
+    const tiers = calcTiers(metric); // 티어는 전체 버거 기준, 브랜드 필터는 표시만 거른다
+    const order = reversed ? ['D', 'C', 'B', 'A', 'S'] : ['S', 'A', 'B', 'C', 'D'];
+    document.getElementById('tiers').innerHTML = order.map(t => {
+      const items = BURGERS
+        .filter(b => tiers[b.id] === t && (brand === '전체' || b.brand === brand))
+        .sort((x, y) => (m.high ? y[metric] - x[metric] : x[metric] - y[metric]));
+      const cards = items.map(b => `
+        <a class="tier-item" href="burger.html?id=${b.id}">
+          ${thumb()}
+          <div><div class="name">${b.name}</div><div class="sub">${b.brand} · ${b[metric]}${m.unit}</div></div>
+        </a>`).join('');
+      return `<div class="tier-row">
+        <div class="tier-label tier-${t}">${t}<small>${items.length}개</small></div>
+        <div class="tier-items">${cards || '<span class="tier-empty">해당하는 버거가 없습니다</span>'}</div>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('tabs').addEventListener('click', e => {
+    if (e.target.dataset.k) { metric = e.target.dataset.k; render(); }
+  });
+  document.getElementById('brands').addEventListener('click', e => {
+    if (e.target.dataset.b) { brand = e.target.dataset.b; render(); }
+  });
+  document.getElementById('dir').addEventListener('click', () => { reversed = !reversed; render(); });
+  render();
+</script>
+</body>
+</html>

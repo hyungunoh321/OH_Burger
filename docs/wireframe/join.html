@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OH Burger - 회원가입</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="container">
+  <form class="card pad narrow" onsubmit="return false">
+    <h1 class="page-title" style="margin-bottom:18px">회원가입</h1>
+    <label class="field">
+      <span>아이디</span>
+      <input class="input" autocomplete="username">
+      <span class="hint" style="font-weight:400">영문 · 숫자 4~20자</span>
+    </label>
+    <label class="field">
+      <span>비밀번호</span>
+      <input class="input" type="password" autocomplete="new-password">
+      <span class="hint" style="font-weight:400">8자 이상</span>
+    </label>
+    <label class="field">
+      <span>비밀번호 확인</span>
+      <input class="input" type="password" autocomplete="new-password">
+    </label>
+    <label class="field">
+      <span>닉네임</span>
+      <input class="input">
+      <span class="hint" style="font-weight:400">2~10자, 게시글과 댓글에 표시됩니다</span>
+    </label>
+    <button class="btn primary big" style="width:100%">가입하기</button>
+    <p class="hint center" style="margin-bottom:0">이미 회원이신가요? <a href="login.html" style="color:var(--brand)">로그인</a></p>
+  </form>
+</main>
+<script src="js/common.js"></script>
+<script>layout('join.html');</script>
+</body>
+</html>

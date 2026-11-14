@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OH Burger - 로그인</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="container">
+  <form class="card pad narrow" onsubmit="return false">
+    <h1 class="page-title" style="margin-bottom:18px">로그인</h1>
+    <label class="field">
+      <span>아이디</span>
+      <input class="input" autocomplete="username">
+    </label>
+    <label class="field">
+      <span>비밀번호</span>
+      <input class="input" type="password" autocomplete="current-password">
+    </label>
+    <p class="hint" style="color:#e03131">아이디 또는 비밀번호가 올바르지 않습니다. <span style="color:var(--muted)">(오류 시 표시)</span></p>
+    <button class="btn primary big" style="width:100%">로그인</button>
+    <p class="hint center" style="margin-bottom:0">아직 회원이 아니신가요? <a href="join.html" style="color:var(--brand)">회원가입</a></p>
+  </form>
+</main>
+<script src="js/common.js"></script>
+<script>layout('login.html');</script>
+</body>
+</html>

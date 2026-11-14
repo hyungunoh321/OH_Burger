@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OH Burger - 버거 룰렛</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="container">
+  <h1 class="page-title">버거 룰렛</h1>
+  <p class="page-desc">뭐 먹을지 고민될 때, 조건을 고르고 돌려 보세요.</p>
+
+  <div class="roulette">
+    <div class="card pad">
+      <div class="field" style="margin-bottom:16px">
+        <span style="display:block;font-weight:700;margin-bottom:6px">브랜드 <span class="hint">(선택 안 하면 전체)</span></span>
+        <div class="chips" id="brands"></div>
+      </div>
+      <label class="field">
+        <span>패티</span>
+        <select class="input" id="patty">
+          <option value="">전체</option>
+          <option value="BEEF">소고기</option>
+          <option value="CHICKEN">치킨</option>
+          <option value="SEAFOOD">새우·생선</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>가격 상한</span>
+        <select class="input" id="price">
+          <option value="">제한 없음</option>
+          <option value="4000">4,000원 이하</option>
+          <option value="5000">5,000원 이하</option>
+          <option value="6000">6,000원 이하</option>
+          <option value="8000">8,000원 이하</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>열량 상한</span>
+        <select class="input" id="kcal">
+          <option value="">제한 없음</option>
+          <option value="450">450kcal 이하</option>
+          <option value="550">550kcal 이하</option>
+          <option value="650">650kcal 이하</option>
+        </select>
+      </label>
+      <p class="hint" id="count"></p>
+      <button class="btn primary big" id="spin" style="width:100%">룰렛 돌리기</button>
+    </div>
+
+    <div>
+      <div class="wheel-wrap">
+        <canvas id="wheel" width="840" height="840"></canvas>
+        <div class="pointer"></div>
+      </div>
+      <div id="result"></div>
+    </div>
+  </div>
+</main>
+
+<script src="js/common.js"></script>
+<script>
+  layout('roulette.html');
+
+  const MAX = 12; // 룰렛에 올리는 최대 후보 수
+  const COLORS = ['#d9480f', '#f08c00', '#e6b800', '#2f9e44', '#1c7ed6', '#7048e8'];
+  const selected = new Set();
+  const canvas = document.getElementById('wheel');
+  const ctx = canvas.getContext('2d');
+  let candidates = [];
+  let rot = 0;
+  let spinning = false;
+
+  // 조건에 맞는 버거 (실제 구현에서는 서버가 JSON으로 응답)
+  function matched() {
+    const patty = document.getElementById('patty').value;
+    const price = Number(document.getElementById('price').value) || Infinity;
+    const kcal = Number(document.getElementById('kcal').value) || Infinity;
+    return BURGERS.filter(b =>
+      (selected.size === 0 || selected.has(b.brand)) &&
+      (!patty || b.patty === patty) && b.price <= price && b.kcal <= kcal);
+  }
+
+  function pick(list) { // 후보가 많으면 무작위로 MAX개만
+    const copy = [...list];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy.slice(0, MAX);
+  }
+
+  function draw() {
+    const R = canvas.width / 2;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(R, R);
+    if (candidates.length === 0) {
+      ctx.fillStyle = '#efe8dc';
+      ctx.beginPath(); ctx.arc(0, 0, R - 10, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#7d6f60'; ctx.font = '34px sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('조건에 맞는 버거가 없습니다', 0, 12);
+      ctx.restore();
+      return;
+    }
+    ctx.rotate(rot);
+    const seg = (Math.PI * 2) / candidates.length;
+    candidates.forEach((b, i) => {
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.arc(0, 0, R - 10, i * seg, (i + 1) * seg);
+      ctx.closePath();
+      // 조각 수가 색 수의 배수 + 1이면 처음과 끝 색이 같아지므로 마지막 조각만 다른 색을 쓴다
+      const last = i === candidates.length - 1 && i % COLORS.length === 0 && i > 0;
+      ctx.fillStyle = COLORS[last ? 3 : i % COLORS.length];
+      ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.stroke();
+
+      ctx.save();
+      ctx.rotate(i * seg + seg / 2);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 28px sans-serif'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      const name = b.name.length > 9 ? b.name.slice(0, 8) + '…' : b.name;
+      ctx.fillText(name, R - 34, 0);
+      ctx.restore();
+    });
+    ctx.restore();
+    ctx.beginPath(); ctx.arc(R, R, 44, 0, Math.PI * 2);
+    ctx.fillStyle = '#2b2118'; ctx.fill();
+  }
+
+  function refresh() {
+    document.getElementById('brands').innerHTML = BRANDS
+      .map(b => `<button class="chip ${selected.has(b) ? 'on' : ''}" data-b="${b}">${b}</button>`).join('');
+    const all = matched();
+    candidates = pick(all);
+    document.getElementById('count').textContent =
+      `조건에 맞는 버거 ${all.length}개` + (all.length > MAX ? ` (그중 ${MAX}개를 무작위로 올림)` : '');
+    document.getElementById('spin').disabled = all.length === 0;
+    document.getElementById('result').innerHTML = '';
+    rot = 0;
+    draw();
+  }
+
+  function show(b) {
+    document.getElementById('result').innerHTML = `
+      <div class="card result">
+        ${thumb()}
+        <div style="flex:1">
+          <div class="hint">오늘의 버거는</div>
+          <div class="name">${b.brand} ${b.name}</div>
+          <div class="hint">${won(b.price)} · ${b.kcal}kcal · 단백질 ${b.protein}g</div>
+        </div>
+        <a class="btn primary" href="burger.html?id=${b.id}">상세 보기</a>
+      </div>`;
+  }
+
+  function spin() {
+    if (spinning || candidates.length === 0) return;
+    if (candidates.length === 1) { show(candidates[0]); return; }
+    spinning = true;
+    document.getElementById('result').innerHTML = '';
+    const seg = (Math.PI * 2) / candidates.length;
+    const winner = Math.floor(Math.random() * candidates.length);
+    // 당첨 조각의 가운데가 위쪽 화살표(-90도)에 오도록 최종 각도를 정하고 5바퀴 이상 돌린다
+    const base = -Math.PI / 2 - (winner + 0.5) * seg;
+    const start = rot;
+    let target = base;
+    while (target < start + Math.PI * 10) target += Math.PI * 2;
+    const t0 = performance.now();
+    const duration = 4000;
+    (function frame(now) {
+      const t = Math.min((now - t0) / duration, 1);
+      rot = start + (target - start) * (1 - Math.pow(1 - t, 3)); // 점점 느려지는 회전
+      draw();
+      if (t < 1) requestAnimationFrame(frame);
+      else { spinning = false; show(candidates[winner]); document.getElementById('spin').textContent = '다시 돌리기'; }
+    })(t0);
+  }
+
+  document.getElementById('brands').addEventListener('click', e => {
+    const b = e.target.dataset.b;
+    if (!b || spinning) return;
+    selected.has(b) ? selected.delete(b) : selected.add(b);
+    refresh();
+  });
+  ['patty', 'price', 'kcal'].forEach(id => document.getElementById(id).addEventListener('input', () => { if (!spinning) refresh(); }));
+  document.getElementById('spin').addEventListener('click', spin);
+  refresh();
+</script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OH Burger - 버거 도감</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="container">
+  <h1 class="page-title">버거 도감</h1>
+  <p class="page-desc">브랜드별 버거 메뉴를 검색하고 비교해 보세요.</p>
+
+  <div class="toolbar">
+    <div class="grow"><input class="input" id="q" type="search" placeholder="버거 이름 검색"></div>
+    <select class="input" id="patty">
+      <option value="">패티 전체</option>
+      <option value="BEEF">소고기</option>
+      <option value="CHICKEN">치킨</option>
+      <option value="SEAFOOD">새우·생선</option>
+      <option value="ETC">기타</option>
+    </select>
+    <select class="input" id="sort">
+      <option value="name">이름순</option>
+      <option value="likes">추천 많은 순</option>
+      <option value="price">가격 낮은 순</option>
+      <option value="kcal">열량 낮은 순</option>
+      <option value="protein">단백질 많은 순</option>
+      <option value="satfat">포화지방 낮은 순</option>
+    </select>
+  </div>
+  <div class="chips" id="brands" style="margin-bottom:16px"></div>
+
+  <p class="hint" id="count"></p>
+  <div class="grid" id="grid"></div>
+</main>
+
+<script src="js/common.js"></script>
+<script>
+  layout('burgers.html');
+
+  const selected = new Set(); // 선택한 브랜드 (비어 있으면 전체)
+  const sorters = {
+    name: (a, b) => a.name.localeCompare(b.name, 'ko'),
+    likes: (a, b) => b.likes - a.likes,
+    price: (a, b) => a.price - b.price,
+    kcal: (a, b) => a.kcal - b.kcal,
+    protein: (a, b) => b.protein - a.protein,
+    satfat: (a, b) => (a.satfat ?? Infinity) - (b.satfat ?? Infinity), // 정보 없는 버거는 뒤로
+  };
+
+  function render() {
+    const q = document.getElementById('q').value.trim();
+    const patty = document.getElementById('patty').value;
+    const sort = document.getElementById('sort').value;
+
+    document.getElementById('brands').innerHTML = BRANDS
+      .map(b => `<button class="chip ${selected.has(b) ? 'on' : ''}" data-b="${b}">${b}</button>`).join('');
+
+    const items = BURGERS
+      .filter(b => b.name.includes(q))
+      .filter(b => !patty || b.patty === patty)
+      .filter(b => selected.size === 0 || selected.has(b.brand))
+      .sort(sorters[sort]);
+
+    document.getElementById('count').textContent = `총 ${items.length}개`;
+    document.getElementById('grid').innerHTML = items.map(b => `
+      <a class="card burger-card" href="burger.html?id=${b.id}">
+        ${thumb()}
+        <div>
+          <div class="name">${b.name}</div>
+          <div class="meta">${b.brand} · ${PATTY[b.patty]}</div>
+          <div class="meta">${won(b.price)} · ${b.kcal}kcal · 단백질 ${b.protein}g</div>
+          <div class="meta">👍 ${b.likes}</div>
+        </div>
+      </a>`).join('') || '<p class="hint">조건에 맞는 버거가 없습니다.</p>';
+  }
+
+  document.getElementById('brands').addEventListener('click', e => {
+    const b = e.target.dataset.b;
+    if (!b) return;
+    selected.has(b) ? selected.delete(b) : selected.add(b);
+    render();
+  });
+  ['q', 'patty', 'sort'].forEach(id => document.getElementById(id).addEventListener('input', render));
+  render();
+</script>
+</body>
+</html>

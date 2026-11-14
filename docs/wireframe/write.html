@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OH Burger - 글쓰기</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main class="container">
+  <h1 class="page-title" id="heading">글쓰기</h1>
+  <p class="page-desc">버거를 태그하면 해당 버거 상세 화면에도 글이 노출됩니다.</p>
+
+  <form class="card pad" onsubmit="return false">
+    <label class="field">
+      <span>분류</span>
+      <select class="input" style="width:auto">
+        <option>꿀조합</option>
+        <option>꿀팁</option>
+        <option>자유</option>
+      </select>
+    </label>
+
+    <label class="field">
+      <span>제목</span>
+      <input class="input" id="title" maxlength="100" placeholder="제목을 입력하세요 (100자 이내)">
+    </label>
+
+    <div class="field" style="margin-bottom:16px">
+      <span style="display:block;font-weight:700;margin-bottom:6px">버거 태그 <span class="hint">(선택, 최대 3개)</span></span>
+      <div class="chips" id="picked" style="margin-bottom:8px"></div>
+      <input class="input" id="tagq" list="burgerlist" placeholder="버거 이름을 검색해 선택하세요">
+      <datalist id="burgerlist"></datalist>
+      <p class="hint" id="tagmsg"></p>
+    </div>
+
+    <label class="field">
+      <span>내용</span>
+      <textarea class="input" maxlength="5000" placeholder="내용을 입력하세요 (5000자 이내)"></textarea>
+    </label>
+
+    <div class="row end">
+      <a class="btn" href="posts.html">취소</a>
+      <button class="btn primary">등록</button>
+    </div>
+  </form>
+</main>
+
+<script src="js/common.js"></script>
+<script>
+  layout('posts.html');
+
+  const label = b => `${b.brand} ${b.name}`;
+  const picked = [];
+  document.getElementById('burgerlist').innerHTML = BURGERS.map(b => `<option value="${label(b)}">`).join('');
+
+  // 수정 화면이면 기존 글 내용을, 버거 상세에서 넘어왔으면 그 버거를 미리 채운다
+  const editing = POSTS.find(p => p.id === Number(param('id')));
+  if (editing) {
+    document.getElementById('heading').textContent = '글 수정';
+    document.getElementById('title').value = editing.title;
+    editing.burgers.forEach(id => picked.push(byId(id)));
+  } else if (byId(param('burger'))) {
+    picked.push(byId(param('burger')));
+  }
+
+  function render() {
+    document.getElementById('picked').innerHTML = picked
+      .map((b, i) => `<button type="button" class="chip on" data-i="${i}">🍔 ${label(b)} ✕</button>`).join('');
+  }
+
+  document.getElementById('tagq').addEventListener('change', e => {
+    const b = BURGERS.find(x => label(x) === e.target.value);
+    const msg = document.getElementById('tagmsg');
+    msg.textContent = '';
+    if (!b) return;
+    if (picked.includes(b)) msg.textContent = '이미 태그한 버거입니다.';
+    else if (picked.length >= 3) msg.textContent = '버거는 최대 3개까지 태그할 수 있습니다.';
+    else picked.push(b);
+    e.target.value = '';
+    render();
+  });
+  document.getElementById('picked').addEventListener('click', e => {
+    if (e.target.dataset.i) { picked.splice(Number(e.target.dataset.i), 1); render(); }
+  });
+  render();
+</script>
+</body>
+</html>
