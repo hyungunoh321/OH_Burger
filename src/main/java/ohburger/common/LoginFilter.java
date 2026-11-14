@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
  * 로그인이 필요한 기능을 새로 만들면 그 주소를 urlPatterns 에 추가한다.
  * 관리자 주소(/admin/*)는 여기서 로그인만 검사하고, 관리자 권한은 해당 서블릿에서 따로 검사한다.
  */
-@WebFilter(urlPatterns = { "/posts/write", "/posts/edit", "/mypage", "/admin/*" })
+@WebFilter(urlPatterns = { "/posts/write", "/posts/edit", "/posts/delete", "/mypage", "/admin/*" })
 public class LoginFilter implements Filter {
 
     @Override

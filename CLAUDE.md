@@ -76,7 +76,9 @@ cp src/main/java/db.properties build/classes/
 
 끝난 것: 버거 추천 토글(B-03, `POST /burgers/like`) (#3). fetch 로 부르는 JSON 서블릿은 `BurgerLikeServlet` 을 본보기로 삼는다(`X-Requested-With: fetch` 헤더 검사, 비회원은 401, 로그인 검사는 필터가 아니라 서블릿에서).
 
-1. 게시판(P-01 ~ P-05) (#4), 댓글(C-01, C-02) (#5). 버거 상세의 "전체 보기"(`/posts?burger=`), "이 버거로 글쓰기"(`/posts/write?burger=`) 링크가 이 주소를 가리킨다. `PostDao` 는 버거 상세용 조회만 있다
+끝난 것: 게시판 목록 · 상세 · 작성 · 수정 · 삭제 · 추천(P-01 ~ P-05, `/posts`, `/posts/detail`, `/posts/write`, `/posts/edit`, `/posts/delete`, `/posts/like`) (#4). 글쓰기 · 수정은 `post_form.jsp` 와 `PostForm`(입력 검사)을 함께 쓴다. 추천 버튼 스크립트는 `js/like.js` 하나를 버거 · 게시글 상세가 같이 쓴다.
+
+1. 댓글(C-01, C-02) (#5). 게시글 상세(`post.jsp`) 아래에 붙인다. 댓글 수는 목록에 이미 표시된다
 2. 룰렛(R-01) (#6)
 3. 404 · 403 · 500 화면 (#7)
 4. 디자인 수정 (#8) (사용자가 현재 디자인이 마음에 들지 않는다고 했고, 기능 구현 뒤에 손보기로 함)
