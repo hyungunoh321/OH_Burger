@@ -12,4 +12,31 @@
     <!-- 주소에 ;jsessionid= 가 붙지 않게 세션은 쿠키로만 추적한다 -->
     <tracking-mode>COOKIE</tracking-mode>
   </session-config>
+
+  <!-- 오류가 나면 Tomcat 기본 화면 대신 ErrorServlet(/error)이 전용 화면을 보여 준다.
+       예외 내용은 화면에 내지 않고 서버 로그에만 남긴다 -->
+  <error-page>
+    <error-code>400</error-code>
+    <location>/error</location>
+  </error-page>
+  <error-page>
+    <error-code>403</error-code>
+    <location>/error</location>
+  </error-page>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/error</location>
+  </error-page>
+  <error-page>
+    <error-code>405</error-code>
+    <location>/error</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/error</location>
+  </error-page>
+  <error-page>
+    <exception-type>java.lang.Throwable</exception-type>
+    <location>/error</location>
+  </error-page>
 </web-app>

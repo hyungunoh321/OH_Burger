@@ -26,11 +26,11 @@
         <form method="post" action="${ctx}/logout"><button class="btn ghost" type="submit">로그아웃</button></form>
       </c:when>
       <c:otherwise>
-        <%-- 로그인 뒤에 지금 보던 화면으로 돌아오게 주소를 넘긴다 (로그인 · 회원가입 화면에서는 넘기지 않음) --%>
+        <%-- 로그인 뒤에 지금 보던 화면으로 돌아오게 주소를 넘긴다 (로그인 · 회원가입 · 오류 화면에서는 넘기지 않음) --%>
         <c:set var="here" value="${requestScope['javax.servlet.forward.servlet_path']}" />
         <c:set var="hereQuery" value="${requestScope['javax.servlet.forward.query_string']}" />
         <c:url var="loginUrl" value="/login">
-          <c:if test="${not empty here and here ne '/login' and here ne '/join'}">
+          <c:if test="${not empty here and here ne '/login' and here ne '/join' and empty requestScope['javax.servlet.error.status_code']}">
             <c:param name="next" value="${here}${empty hereQuery ? '' : '?'}${hereQuery}" />
           </c:if>
         </c:url>

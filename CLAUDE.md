@@ -82,9 +82,10 @@ cp src/main/java/db.properties build/classes/
 
 끝난 것: 룰렛(R-01, `/roulette`, 후보 JSON 은 `GET /roulette/candidates`) (#6). 회전 · 당첨은 `js/roulette.js`, JSON 문자열은 `ohburger.common.Json.quote` 로 만든다.
 
-1. 404 · 403 · 500 화면 (#7)
-2. 디자인 수정 (#8) (사용자가 현재 디자인이 마음에 들지 않는다고 했고, 기능 구현 뒤에 손보기로 함)
-3. 가격 · 이미지 보완 (#9), 데모 영상 시나리오 정리 (#10)
+끝난 것: 404 · 403 · 500 오류 화면 (#7). `web.xml` 의 `error-page` 가 `ErrorServlet`(`/error`)으로 보내고 `error.jsp` 가 그린다. 서블릿에서는 `resp.sendError(상태 코드)` 만 부르면 된다. 예외는 `logs/localhost.날짜.log` 에 남는다.
+
+1. 디자인 수정 (#8) (사용자가 현재 디자인이 마음에 들지 않는다고 했고, 기능 구현 뒤에 손보기로 함)
+2. 가격 · 이미지 보완 (#9), 데모 영상 시나리오 정리 (#10)
 
 선택 기능(마이페이지 M-03 (#11), 관리자 버거 관리 B-04 (#12))은 시간이 남을 때만 한다.
 
