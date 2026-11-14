@@ -1,0 +1,78 @@
+package ohburger.web;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import ohburger.dao.BurgerDao;
+import ohburger.dao.PostDao;
+import ohburger.dao.TierDao;
+import ohburger.model.Burger;
+import ohburger.model.Metric;
+
+/** 버거 상세 (B-02): 기본 · 영양 정보, 티어 배지 4종, 태그된 게시글 상위 5개. */
+@WebServlet("/burgers/detail")
+public class BurgerDetailServlet extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
+
+    /** 세션에 이미 조회한 버거 번호를 담아 두는 속성 이름 (조회수 중복 증가 방지). */
+    private static final String VIEWED = "viewedBurgers";
+    private static final int RELATED_POST_LIMIT = 5;
+
+    private final BurgerDao burgerDao = new BurgerDao();
+    private final TierDao tierDao = new TierDao();
+    private final PostDao postDao = new PostDao();
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int id;
+        try {
+            id = Integer.parseInt(req.getParameter("id"));
+        } catch (NumberFormatException e) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        try {
+            Burger burger = burgerDao.findById(id);
+            if (burger == null) {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            // 같은 세션에서 같은 버거는 조회수를 한 번만 올린다
+            if (markViewed(req.getSession(), id)) {
+                burgerDao.increaseViewCount(id);
+                burger.setViewCount(burger.getViewCount() + 1);
+            }
+            req.setAttribute("burger", burger);
+            req.setAttribute("metrics", Metric.values());
+            req.setAttribute("tiers", tierDao.tiersOf(id));
+            req.setAttribute("posts", postDao.findTopByBurger(id, RELATED_POST_LIMIT));
+        } catch (SQLException e) {
+            throw new ServletException("버거 상세 조회 실패", e);
+        }
+        req.getRequestDispatcher("/WEB-INF/views/burger.jsp").forward(req, resp);
+    }
+
+    /** 이 세션에서 처음 보는 버거면 기록하고 true 를 돌려준다. */
+    private static boolean markViewed(HttpSession session, int burgerId) {
+        synchronized (session) {
+            @SuppressWarnings("unchecked")
+            Set<Integer> viewed = (Set<Integer>) session.getAttribute(VIEWED);
+            if (viewed == null) {
+                viewed = new HashSet<>();
+                session.setAttribute(VIEWED, viewed);
+            }
+            return viewed.add(burgerId);
+        }
+    }
+}
