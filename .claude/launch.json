@@ -6,6 +6,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "5500", "--directory", "docs/wireframe"],
       "port": 5500
+    },
+    {
+      "name": "tomcat",
+      "runtimeExecutable": "C:\\dev\\run-tomcat.bat",
+      "runtimeArgs": [],
+      "port": 8080
     }
   ]
 }

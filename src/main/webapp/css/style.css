@@ -1,0 +1,188 @@
+/* OH Burger 화면 설계용 프로토타입 스타일 */
+:root {
+  --bg: #faf6ef;
+  --surface: #ffffff;
+  --line: #e7dfd2;
+  --text: #2b2118;
+  --muted: #7d6f60;
+  --brand: #d9480f;
+  --brand-dark: #a8370b;
+  --header: #2b2118;
+  --tier-s: #e03131;
+  --tier-a: #f08c00;
+  --tier-b: #e6b800;
+  --tier-c: #2f9e44;
+  --tier-d: #5c7c99;
+  --radius: 10px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+a { color: inherit; text-decoration: none; }
+h1, h2, h3 { margin: 0; line-height: 1.3; }
+button, input, select, textarea { font: inherit; color: inherit; }
+
+.container { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+main.container { padding-top: 28px; padding-bottom: 56px; min-height: 70vh; }
+
+/* 헤더 · 푸터 */
+.site-header { background: var(--header); color: #fff; }
+.site-header .container { display: flex; align-items: center; gap: 28px; height: 60px; }
+.logo { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; white-space: nowrap; }
+.logo span { color: #ffb347; }
+.nav { display: flex; gap: 4px; flex: 1; overflow-x: auto; }
+.nav a { padding: 8px 12px; border-radius: 8px; color: #d9cfc2; white-space: nowrap; }
+.nav a:hover { color: #fff; }
+.nav a.active { background: rgba(255, 255, 255, 0.12); color: #fff; font-weight: 700; }
+.auth { display: flex; gap: 8px; white-space: nowrap; }
+.site-footer { border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; padding: 20px 0; text-align: center; }
+
+/* 공통 요소 */
+.page-title { font-size: 24px; margin-bottom: 4px; }
+.page-desc { color: var(--muted); margin: 0 0 20px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.pad { padding: 20px; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--surface); cursor: pointer; white-space: nowrap;
+}
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--brand); border-color: var(--brand); color: #fff; font-weight: 700; }
+.btn.primary:hover { background: var(--brand-dark); border-color: var(--brand-dark); }
+.btn.ghost { background: transparent; border-color: rgba(255, 255, 255, 0.3); color: #fff; }
+.btn.on { background: #fff1e8; border-color: var(--brand); color: var(--brand); font-weight: 700; }
+.btn.big { padding: 12px 22px; font-size: 16px; }
+
+.input, select.input, textarea.input {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; background: #fff;
+}
+.input:focus { outline: 2px solid #ffc9a8; border-color: var(--brand); }
+textarea.input { min-height: 220px; resize: vertical; }
+label.field { display: block; margin-bottom: 16px; }
+label.field > span { display: block; font-weight: 700; margin-bottom: 6px; }
+.hint { color: var(--muted); font-size: 13px; }
+
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 16px; }
+.toolbar .grow { flex: 1; min-width: 180px; }
+.toolbar select.input, .toolbar .input { width: auto; }
+.toolbar .grow .input { width: 100%; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line);
+  background: var(--surface); cursor: pointer; font-size: 14px;
+}
+.chip.on { background: var(--header); border-color: var(--header); color: #fff; }
+.tag { display: inline-block; padding: 2px 9px; border-radius: 999px; background: #fff1e8; color: var(--brand-dark); font-size: 13px; }
+.cat { display: inline-block; padding: 1px 8px; border-radius: 6px; background: #efe8dc; font-size: 13px; color: var(--muted); }
+
+.tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--line); margin-bottom: 16px; overflow-x: auto; }
+.tab {
+  padding: 10px 18px; border: 0; background: none; cursor: pointer; font-weight: 700;
+  color: var(--muted); border-bottom: 3px solid transparent; white-space: nowrap;
+}
+.tab.on { color: var(--brand); border-bottom-color: var(--brand); }
+
+/* 버거 썸네일 (이미지 자리) */
+.thumb {
+  display: flex; align-items: center; justify-content: center;
+  width: 64px; height: 64px; border-radius: 12px; font-size: 32px;
+  background: #f3ece0; border: 1px solid var(--line); flex: none;
+}
+.thumb.lg { width: 100%; height: 260px; font-size: 110px; border-radius: var(--radius); }
+
+/* 티어표 */
+.tier-row { display: flex; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+.tier-label {
+  flex: none; width: 72px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #fff; font-size: 30px; font-weight: 800;
+}
+.tier-label small { font-size: 11px; font-weight: 400; opacity: 0.9; }
+.tier-S { background: var(--tier-s); } .tier-A { background: var(--tier-a); } .tier-B { background: var(--tier-b); }
+.tier-C { background: var(--tier-c); } .tier-D { background: var(--tier-d); }
+.tier-items { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; flex: 1; min-height: 84px; align-items: center; }
+.tier-item {
+  display: flex; align-items: center; gap: 8px; padding: 6px 10px 6px 6px; width: 190px;
+  border: 1px solid var(--line); border-radius: 10px; background: #fffdf9;
+}
+.tier-item:hover { border-color: var(--brand); }
+.tier-item .thumb { width: 44px; height: 44px; font-size: 22px; border-radius: 8px; }
+.tier-item .name { font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+.tier-item .sub { font-size: 12px; color: var(--muted); }
+.tier-empty { color: var(--muted); font-size: 13px; padding: 0 8px; }
+.badge { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 6px; color: #fff; font-weight: 800; font-size: 14px; }
+.badge.none { background: #cfc6b8; width: auto; padding: 0 8px; font-weight: 400; font-size: 12px; }
+
+/* 버거 목록 */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+.burger-card { padding: 14px; display: flex; gap: 12px; }
+.burger-card:hover { border-color: var(--brand); }
+.burger-card .name { font-weight: 700; }
+.burger-card .meta { color: var(--muted); font-size: 13px; }
+
+/* 버거 상세 */
+.detail { display: grid; grid-template-columns: 320px 1fr; gap: 24px; }
+.detail h1 { font-size: 28px; }
+.nutri { width: 100%; border-collapse: collapse; margin: 14px 0; }
+.nutri th, .nutri td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; }
+.nutri th { color: var(--muted); font-weight: 400; width: 40%; }
+.tier-badges { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0; }
+.tier-badges > div { text-align: center; padding: 10px 4px; border: 1px solid var(--line); border-radius: 8px; font-size: 13px; color: var(--muted); }
+.tier-badges .badge { display: flex; margin: 6px auto 0; width: 34px; height: 34px; font-size: 18px; }
+.section-title { font-size: 18px; margin: 32px 0 12px; }
+
+/* 게시판 */
+.list { width: 100%; border-collapse: collapse; }
+.list th, .list td { padding: 11px 10px; border-bottom: 1px solid var(--line); text-align: center; white-space: nowrap; }
+.list th { font-size: 13px; color: var(--muted); font-weight: 400; background: #f6f0e6; }
+.list td.title { text-align: left; white-space: normal; width: 100%; }
+.list td.title a:hover { color: var(--brand); text-decoration: underline; }
+.list .cnt { color: var(--brand); font-size: 13px; }
+.pager { display: flex; justify-content: center; gap: 4px; margin-top: 18px; }
+.pager a { padding: 6px 12px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+.pager a.on { background: var(--header); color: #fff; border-color: var(--header); }
+.post-meta { color: var(--muted); font-size: 13px; margin: 8px 0 14px; display: flex; flex-wrap: wrap; gap: 12px; }
+.post-body { padding: 20px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); white-space: pre-line; min-height: 160px; }
+.center { text-align: center; }
+.comment { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.comment .who { font-weight: 700; margin-right: 8px; }
+.comment .when { color: var(--muted); font-size: 12px; }
+.row { display: flex; gap: 8px; align-items: center; }
+.row.end { justify-content: flex-end; }
+.row.between { justify-content: space-between; }
+
+/* 로그인 · 회원가입 */
+.narrow { max-width: 400px; margin: 24px auto; }
+
+/* 룰렛 */
+.roulette { display: grid; grid-template-columns: 320px 1fr; gap: 24px; align-items: start; }
+.wheel-wrap { position: relative; width: 100%; max-width: 420px; margin: 0 auto; }
+.wheel-wrap canvas { width: 100%; height: auto; display: block; }
+.pointer {
+  position: absolute; top: -6px; left: 50%; transform: translateX(-50%);
+  border-left: 14px solid transparent; border-right: 14px solid transparent; border-top: 26px solid var(--header);
+}
+.result { margin-top: 18px; padding: 16px; display: flex; gap: 14px; align-items: center; }
+.result .name { font-size: 20px; font-weight: 800; }
+
+@media (max-width: 760px) {
+  .site-header .container { gap: 12px; }
+  .auth .btn:last-child { display: none; }
+  .detail, .roulette { grid-template-columns: 1fr; }
+  .tier-label { width: 48px; font-size: 22px; }
+  .tier-item { width: calc(50% - 4px); }
+  .tier-item .name { max-width: 80px; }
+  .list .hide-sm { display: none; }
+  .tier-badges { grid-template-columns: repeat(2, 1fr); }
+}

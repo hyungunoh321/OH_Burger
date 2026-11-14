@@ -1,0 +1,4 @@
+# 이 파일을 db.properties 로 복사한 뒤 값을 채운다. db.properties 는 Git에 올리지 않는다.
+db.url=jdbc:mysql://localhost:3306/oh_burger?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+db.user=ohburger
+db.password=여기에_비밀번호
