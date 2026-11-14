@@ -13,8 +13,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import ohburger.common.Auth;
+import ohburger.dao.CommentDao;
 import ohburger.dao.PostDao;
 import ohburger.dao.PostLikeDao;
+import ohburger.model.Comment;
 import ohburger.model.LoginMember;
 import ohburger.model.Post;
 
@@ -29,6 +31,7 @@ public class PostDetailServlet extends HttpServlet {
 
     private final PostDao postDao = new PostDao();
     private final PostLikeDao likeDao = new PostLikeDao();
+    private final CommentDao commentDao = new CommentDao();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -58,6 +61,15 @@ public class PostDetailServlet extends HttpServlet {
             req.setAttribute("author", author);                                   // 수정 버튼, 자기 글 추천 불가
             req.setAttribute("canDelete", author || (member != null && member.isAdmin()));
             req.setAttribute("liked", member != null && likeDao.isLiked(member.getId(), id));
+            req.setAttribute("comments", commentDao.listByPost(id));
+            req.setAttribute("commentMax", Comment.CONTENT_MAX);
+
+            // 댓글 등록이 실패해 돌아온 경우: 사유와 쓰던 내용을 한 번만 보여 주고 세션에서 지운다
+            HttpSession session = req.getSession();
+            req.setAttribute("commentError", session.getAttribute(CommentWriteServlet.ERROR + id));
+            req.setAttribute("commentDraft", session.getAttribute(CommentWriteServlet.DRAFT + id));
+            session.removeAttribute(CommentWriteServlet.ERROR + id);
+            session.removeAttribute(CommentWriteServlet.DRAFT + id);
         } catch (SQLException e) {
             throw new ServletException("게시글 상세 조회 실패", e);
         }

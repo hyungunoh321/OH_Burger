@@ -52,6 +52,43 @@
   </div>
 </div>
 
+<%-- 댓글 (C-01, C-02) --%>
+<h2 class="section-title" id="comments">댓글 ${comments.size()}</h2>
+<div class="card pad">
+  <c:set var="me" value="${sessionScope.loginMember}" />
+  <c:forEach var="cm" items="${comments}">
+    <div class="comment">
+      <span class="who"><c:out value="${cm.nickname}" /></span><span class="when">${cm.createdDateTime}</span>
+      <%-- 삭제 버튼은 작성자와 관리자에게만 보인다. 권한은 삭제 서블릿이 다시 검사한다 --%>
+      <c:if test="${not empty me and (me.id == cm.memberId or me.admin)}">
+        <form method="post" action="${ctx}/comments/delete" style="float:right;margin:0"
+              onsubmit="return confirm('이 댓글을 삭제할까요?');">
+          <input type="hidden" name="id" value="${cm.id}">
+          <button class="btn" type="submit" style="padding:2px 8px;font-size:12px">삭제</button>
+        </form>
+      </c:if>
+      <div><c:out value="${cm.content}" /></div>
+    </div>
+  </c:forEach>
+  <c:if test="${empty comments}"><p class="hint" style="margin-top:0">아직 댓글이 없습니다.</p></c:if>
+
+  <c:choose>
+    <c:when test="${not empty me}">
+      <form class="row" method="post" action="${ctx}/comments/write" style="margin-top:14px">
+        <input type="hidden" name="postId" value="${post.id}">
+        <input class="input" name="content" value="<c:out value="${commentDraft}" />" maxlength="${commentMax}" required
+               placeholder="댓글을 입력하세요 (${commentMax}자 이내)" aria-label="댓글 내용">
+        <button class="btn primary" type="submit">등록</button>
+      </form>
+      <c:if test="${not empty commentError}"><p class="error"><c:out value="${commentError}" /></p></c:if>
+    </c:when>
+    <c:otherwise>
+      <c:url var="commentLoginUrl" value="/login"><c:param name="next" value="/posts/detail?id=${post.id}" /></c:url>
+      <p class="hint" style="margin:14px 0 0">댓글을 쓰려면 <a href="${commentLoginUrl}" style="color:var(--brand)">로그인</a>이 필요합니다.</p>
+    </c:otherwise>
+  </c:choose>
+</div>
+
 <script src="${ctx}/js/like.js"></script>
 
 <jsp:include page="/WEB-INF/views/footer.jsp" />
