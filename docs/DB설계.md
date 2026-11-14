@@ -170,5 +170,8 @@ ORDER BY p, name;
 ## 5. 초기 데이터
 
 - 브랜드 7곳은 `schema.sql` 에 포함
-- 버거 데이터는 각 브랜드 공식 홈페이지에서 수집해 `db/data_burger.sql` 로 별도 작성 예정
+- 버거 데이터 160종은 [db/data_burger.sql](../db/data_burger.sql) (각 브랜드 공식 홈페이지에서 2026-11-14 조회, `schema.sql` 다음에 실행)
+  - 가격은 롯데리아와 KFC(딜리버리 메뉴 기준)만 공개돼 있어 나머지 브랜드는 NULL
+  - 이미지 주소(`image_url`)는 아직 비어 있음
+  - 패티 종류는 공식 분류가 아니라 메뉴명 · 설명을 보고 정한 값
 - 관리자 계정은 회원가입 후 `UPDATE member SET role = 'ADMIN' WHERE login_id = '...'` 로 지정
