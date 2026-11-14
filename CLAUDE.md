@@ -72,7 +72,9 @@ cp src/main/java/db.properties build/classes/
 
 끝난 것: 버거 도감(B-01, `/burgers`), 버거 상세(B-02, `/burgers/detail`), 메인 티어표(T-01, T-02, `/home`) (#1).
 
-1. 회원가입 · 로그인(M-01, M-02), 로그인 검사 필터 (#2), 버거 추천(B-03) (#3). 버거 상세의 추천 버튼은 지금 비활성(disabled) 상태라 여기서 연결한다
+끝난 것: 회원가입(M-01, `/join`), 로그인 · 로그아웃(M-02, `/login`, `/logout`), 로그인 검사 필터 (#2). 로그인한 회원은 세션의 `loginMember`(`ohburger.model.LoginMember`)이고 서블릿에서는 `Auth.current(req)` 로 읽는다. 로그인이 필요한 주소는 `LoginFilter` 의 `urlPatterns` 에 추가한다.
+
+1. 버거 추천(B-03) (#3). 버거 상세의 추천 버튼은 지금 비활성(disabled) 상태라 여기서 연결한다
 2. 게시판(P-01 ~ P-05) (#4), 댓글(C-01, C-02) (#5). 버거 상세의 "전체 보기"(`/posts?burger=`), "이 버거로 글쓰기"(`/posts/write?burger=`) 링크가 이 주소를 가리킨다. `PostDao` 는 버거 상세용 조회만 있다
 3. 룰렛(R-01) (#6)
 4. 404 · 403 · 500 화면 (#7)
