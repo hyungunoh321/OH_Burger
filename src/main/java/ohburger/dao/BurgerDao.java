@@ -98,6 +98,53 @@ public class BurgerDao {
         return list;
     }
 
+    /**
+     * 룰렛 후보를 찾는다 (R-01). 조건은 모두 선택 사항이며 null · 빈 목록이면 걸지 않는다.
+     * 상한을 걸면 그 값이 없는(NULL) 버거는 후보에서 빠진다 (가격을 공개하지 않은 브랜드 등).
+     *
+     * @param maxPrice 가격 상한(원)
+     * @param maxKcal  열량 상한(kcal)
+     */
+    public List<Burger> findForRoulette(List<Integer> brandIds, String pattyType, Integer maxPrice, Integer maxKcal)
+            throws SQLException {
+        StringBuilder sql = new StringBuilder(SELECT).append("WHERE 1 = 1 ");
+        List<Object> params = new ArrayList<>();
+
+        if (brandIds != null && !brandIds.isEmpty()) {
+            sql.append("AND b.brand_id IN (")
+               .append(String.join(", ", Collections.nCopies(brandIds.size(), "?")))
+               .append(") ");
+            params.addAll(brandIds);
+        }
+        if (pattyType != null) {
+            sql.append("AND b.patty_type = ? ");
+            params.add(pattyType);
+        }
+        if (maxPrice != null) {
+            sql.append("AND b.price IS NOT NULL AND b.price <= ? ");
+            params.add(maxPrice);
+        }
+        if (maxKcal != null) {
+            sql.append("AND b.calories_kcal IS NOT NULL AND b.calories_kcal <= ? ");
+            params.add(maxKcal);
+        }
+        sql.append("ORDER BY b.burger_id");
+
+        List<Burger> list = new ArrayList<>();
+        try (Connection con = DB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(map(rs));
+                }
+            }
+        }
+        return list;
+    }
+
     /** 버거 한 종을 찾는다. 없으면 null. */
     public Burger findById(int burgerId) throws SQLException {
         try (Connection con = DB.getConnection();
