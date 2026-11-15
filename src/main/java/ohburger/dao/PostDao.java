@@ -232,6 +232,26 @@ public class PostDao {
         return list;
     }
 
+    /** 회원이 쓴 게시글 전부를 최신순으로 돌려준다 (마이페이지용). 본문은 싣지 않고, 태그된 버거는 함께 싣는다. */
+    public List<Post> findByMember(int memberId) throws SQLException {
+        String sql = "SELECT " + COLUMNS + FROM
+                   + "WHERE p.member_id = ? ORDER BY p.created_at DESC, p.post_id DESC";
+        Map<Integer, Post> posts = new LinkedHashMap<>();
+        try (Connection con = DB.getConnection()) {
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setInt(1, memberId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Post p = map(rs);
+                        posts.put(p.getId(), p);
+                    }
+                }
+            }
+            loadTags(con, posts);
+        }
+        return new ArrayList<>(posts.values());
+    }
+
     private static void insertTags(Connection con, int postId, List<Integer> burgerIds) throws SQLException {
         if (burgerIds.isEmpty()) {
             return;

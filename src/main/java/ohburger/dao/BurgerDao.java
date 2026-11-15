@@ -155,6 +155,24 @@ public class BurgerDao {
         }
     }
 
+    /** 회원이 추천한 버거 전부를 최근에 추천한 순으로 돌려준다 (마이페이지용). */
+    public List<Burger> findLikedBy(int memberId) throws SQLException {
+        String sql = SELECT
+                   + "JOIN burger_like mine ON mine.burger_id = b.burger_id AND mine.member_id = ? "
+                   + "ORDER BY mine.created_at DESC, b.burger_id DESC";
+        List<Burger> list = new ArrayList<>();
+        try (Connection con = DB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, memberId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(map(rs));
+                }
+            }
+        }
+        return list;
+    }
+
     /** 조회수를 1 올린다. */
     public void increaseViewCount(int burgerId) throws SQLException {
         try (Connection con = DB.getConnection();
