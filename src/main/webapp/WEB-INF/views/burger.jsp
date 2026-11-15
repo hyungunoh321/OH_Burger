@@ -9,7 +9,7 @@
 <p class="hint"><a href="${ctx}/burgers">버거 도감</a> › <a href="${ctx}/burgers?brand=${burger.brandId}"><c:out value="${burger.brandName}" /></a></p>
 
 <div class="detail">
-  <div><div class="thumb lg" aria-hidden="true">🍔</div></div>
+  <div><div class="thumb lg" aria-hidden="true"></div></div>
   <div>
     <span class="tag"><c:out value="${burger.brandName}" /></span>
     <h1><c:out value="${burger.name}" /></h1>
@@ -67,7 +67,7 @@
     <div class="row">
       <%-- 추천 토글(B-03): 누르면 새로고침 없이 서버에 요청하고 최신 추천 수로 바꾼다 --%>
       <button class="btn big ${liked ? 'on' : ''}" id="like" type="button" aria-pressed="${liked}"
-              data-url="${ctx}/burgers/like" data-id="${burger.id}">👍 추천 <b id="likes">${burger.likeCount}</b></button>
+              data-url="${ctx}/burgers/like" data-id="${burger.id}">추천 <b id="likes">${burger.likeCount}</b></button>
       <span class="hint">조회 <fmt:formatNumber value="${burger.viewCount}" pattern="#,###" /></span>
     </div>
     <c:url var="loginUrl" value="/login"><c:param name="next" value="/burgers/detail?id=${burger.id}" /></c:url>
@@ -93,7 +93,7 @@
           <c:if test="${p.commentCount > 0}"><span class="cnt">[${p.commentCount}]</span></c:if>
         </td>
         <td class="hide-sm"><c:out value="${p.nickname}" /></td>
-        <td>👍 ${p.likeCount}</td>
+        <td>추천 ${p.likeCount}</td>
       </tr>
     </c:forEach>
     <c:if test="${empty posts}">

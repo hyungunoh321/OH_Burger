@@ -61,7 +61,7 @@
     <div class="tier-items">
       <c:forEach var="e" items="${row.value}">
         <a class="tier-item" href="${ctx}/burgers/detail?id=${e.burgerId}">
-          <div class="thumb" aria-hidden="true">🍔</div>
+          <div class="thumb" aria-hidden="true"></div>
           <div>
             <div class="name"><c:out value="${e.name}" /></div>
             <div class="sub"><c:out value="${e.brandName}" /> · <fmt:formatNumber value="${e.value}" maxFractionDigits="1" />${metric.unit}</div>

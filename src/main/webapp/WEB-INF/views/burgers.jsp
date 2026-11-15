@@ -47,7 +47,7 @@
     <div class="grid">
       <c:forEach var="b" items="${burgers}">
         <a class="card burger-card" href="${ctx}/burgers/detail?id=${b.id}">
-          <div class="thumb" aria-hidden="true">🍔</div>
+          <div class="thumb" aria-hidden="true"></div>
           <div>
             <div class="name"><c:out value="${b.name}" /></div>
             <div class="meta"><c:out value="${b.brandName}" /> · ${b.pattyLabel}</div>
@@ -68,7 +68,7 @@
                 <c:otherwise>단백질 <fmt:formatNumber value="${b.proteinG}" maxFractionDigits="1" />g</c:otherwise>
               </c:choose>
             </div>
-            <div class="meta">👍 ${b.likeCount}</div>
+            <div class="meta">추천 ${b.likeCount}</div>
           </div>
         </a>
       </c:forEach>
