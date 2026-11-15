@@ -33,7 +33,7 @@
 
 ```bash
 # 1) 컴파일 (프로젝트 루트에서)
-javac -encoding UTF-8 --release 21 -cp "C:\dev\apache-tomcat-9.0.124\lib\servlet-api.jar;src\main\webapp\WEB-INF\lib\*" -d build/classes $(find src/main/java -name '*.java')
+javac -encoding UTF-8 --release 21 -cp "C:\dev\apache-tomcat-9.0.124\lib\servlet-api.jar;C:\dev\apache-tomcat-9.0.124\lib\tomcat-jdbc.jar;src\main\webapp\WEB-INF\lib\*" -d build/classes $(find src/main/java -name '*.java')
 cp src/main/java/db.properties build/classes/
 # 2) Tomcat 실행: .claude/launch.json 의 "tomcat" (C:\dev\run-tomcat.bat)
 # 3) http://localhost:8080/OH_Burger/
@@ -72,9 +72,9 @@ cp src/main/java/db.properties build/classes/
 
 끝난 것: 버거 도감(B-01, `/burgers`), 버거 상세(B-02, `/burgers/detail`), 메인 티어표(T-01, T-02, `/home`) (#1).
 
-끝난 것: 회원가입(M-01, `/join`), 로그인 · 로그아웃(M-02, `/login`, `/logout`), 로그인 검사 필터 (#2). 로그인한 회원은 세션의 `loginMember`(`ohburger.model.LoginMember`)이고 서블릿에서는 `Auth.current(req)` 로 읽는다. 로그인이 필요한 주소는 `LoginFilter` 의 `urlPatterns` 에 추가한다.
+끝난 것: 회원가입(M-01, `/join`), 로그인 · 로그아웃(M-02, `/login`, `/logout`), 로그인 검사 필터 (#2). 로그인한 회원은 세션의 `loginMember`(`ohburger.model.LoginMember`)이고 서블릿에서는 `Auth.current(req)` 로 읽는다. 로그인이 필요한 주소는 `web.xml` 의 `login` 필터 `filter-mapping` 에 추가한다.
 
-끝난 것: 버거 추천 토글(B-03, `POST /burgers/like`) (#3). fetch 로 부르는 JSON 서블릿은 `BurgerLikeServlet` 을 본보기로 삼는다(`X-Requested-With: fetch` 헤더 검사, 비회원은 401, 로그인 검사는 필터가 아니라 서블릿에서).
+끝난 것: 버거 추천 토글(B-03, `POST /burgers/like`) (#3). fetch 로 부르는 JSON 서블릿은 `BurgerLikeServlet` 을 본보기로 삼는다(`X-Requested-With: fetch` 헤더 검사, 비회원은 401, 로그인 검사는 필터가 아니라 서블릿에서, 응답은 `Json.write`). 버거 · 게시글 추천은 `LikeDao.BURGER` · `LikeDao.POST` 를 쓴다.
 
 끝난 것: 게시판 목록 · 상세 · 작성 · 수정 · 삭제 · 추천(P-01 ~ P-05, `/posts`, `/posts/detail`, `/posts/write`, `/posts/edit`, `/posts/delete`, `/posts/like`) (#4). 글쓰기 · 수정은 `post_form.jsp` 와 `PostForm`(입력 검사)을 함께 쓴다. 추천 버튼 스크립트는 `js/like.js` 하나를 버거 · 게시글 상세가 같이 쓴다.
 
@@ -83,6 +83,13 @@ cp src/main/java/db.properties build/classes/
 끝난 것: 룰렛(R-01, `/roulette`, 후보 JSON 은 `GET /roulette/candidates`) (#6). 회전 · 당첨은 `js/roulette.js`, JSON 문자열은 `ohburger.common.Json.quote` 로 만든다.
 
 끝난 것: 404 · 403 · 500 오류 화면 (#7). `web.xml` 의 `error-page` 가 `ErrorServlet`(`/error`)으로 보내고 `error.jsp` 가 그린다. 서블릿에서는 `resp.sendError(상태 코드)` 만 부르면 된다. 예외는 `logs/localhost.날짜.log` 에 남는다.
+
+끝난 것: 코드 검토에서 나온 오류 수정과 정리 (#20). 이때 생긴 공통 장치:
+
+- 필터는 `web.xml` 에 순서대로 적는다(`@WebFilter` 를 쓰지 않는다): 인코딩 → `CsrfFilter`(다른 사이트에서 온 POST 를 403 으로 거절) → `SessionRefreshFilter`(요청마다 회원의 닉네임 · 권한을 DB 에서 다시 읽음, 지워진 회원은 로그아웃) → `LoginFilter`.
+- 로그인이 풀린 채 양식을 보내면 `LoginFilter` 가 입력값을 `PendingForm` 에 맡기고, 로그인 뒤 같은 화면에서 되살린다. 양식을 받는 주소를 새로 만들면 `LoginFilter.returnPage` 에 돌아갈 화면을 추가한다.
+- DB 연결은 Tomcat 에 들어 있는 tomcat-jdbc 연결 풀을 쓴다(`DB.java`, 컴파일할 때 `tomcat-jdbc.jar` 필요). 트랜잭션에서 자동 커밋을 끄면 `finally` 에서 다시 켠다.
+- 세션당 1회 조회수는 `ViewCounter.firstView`, 부분 일치 검색어는 `DB.likePattern` 을 쓴다.
 
 1. 디자인 수정 (#8) (사용자가 현재 디자인이 마음에 들지 않는다고 했고, 기능 구현 뒤에 손보기로 함)
 2. 가격 · 이미지 보완 (#9), 데모 영상 시나리오 정리 (#10)
@@ -93,12 +100,12 @@ cp src/main/java/db.properties build/classes/
 
 - 기능 하나를 DB → DAO → 서블릿 → JSP 까지 끝내고 다음으로 넘어간다.
 - **실무처럼 기능마다 브랜치를 만들고 Pull Request 로 `main` 에 넣는다.** 작업 흔적을 GitHub 에 남기기 위해서다. `main` 에서 직접 작업하거나 로컬에서 `main` 에 merge 하지 않는다. 문서만 고칠 때도 같다(`docs/<내용>` 브랜치).
-  1. `main` 을 최신으로 맞추고 `feature/<이슈 번호>-<기능>` 브랜치를 만든다 (예: `feature/2-member-login`).
+  1. `main` 을 최신으로 맞추고 `feature/<이슈 번호>-<기능>` 브랜치를 만든다 (예: `feature/2-member-login`). 오류 수정은 `fix/<이슈 번호>-<내용>`.
   2. 작업하고 브라우저에서 확인한 뒤 커밋한다.
   3. 브랜치를 원격에 푸시하고 `gh pr create` 로 PR 을 연다. 본문에 무엇을 했는지, 어떻게 확인했는지, `Closes #번호` 를 적는다.
   4. PR 링크와 한 일을 보고하고 기다린다. 사용자가 PR 을 보고 merge 하라고 하면 `gh pr merge --merge --delete-branch` 로 merge 한다. 커밋 이력을 남기기 위해 squash 하지 않는다.
   5. `git switch main && git pull` 로 로컬 `main` 을 맞춘다.
-- **할 일은 GitHub 이슈로 관리한다** (저장소 `hyungunoh321/OH_Burger`, 마일스톤 "제출"). 라벨은 `feature` · `design` · `data` · `docs` · `optional`.
+- **할 일은 GitHub 이슈로 관리한다** (저장소 `hyungunoh321/OH_Burger`, 마일스톤 "제출"). 라벨은 `feature` · `fix` · `design` · `data` · `docs` · `optional`.
   - 작업을 시작할 때 해당 이슈를 확인한다. PR 본문의 `Closes #번호` 로 merge 될 때 이슈가 닫힌다.
   - 새로 생긴 일이나 발견한 버그는 이슈로 등록한다. 이슈 생성 · 수정 · 닫기는 외부에 공개되는 일이므로 사용자가 하라고 할 때 한다.
   - `gh` 는 `C:\Program Files\GitHub CLI\gh.exe` 에 있다 (Git Bash 에서 PATH 에 없으면 전체 경로로 실행).
