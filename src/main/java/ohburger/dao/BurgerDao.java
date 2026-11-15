@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -13,7 +14,7 @@ import java.util.Map;
 import ohburger.common.DB;
 import ohburger.model.Burger;
 
-/** burger 테이블 조회 (B-01, B-02). */
+/** burger 테이블 조회 (B-01, B-02)와 관리자의 등록 · 수정 · 삭제 (B-04). */
 public class BurgerDao {
 
     /** 정렬 코드 → 화면 표시 이름. 목록 화면의 선택 상자에 그대로 쓴다. */
@@ -171,6 +172,81 @@ public class BurgerDao {
             }
         }
         return list;
+    }
+
+    /**
+     * 같은 브랜드에 같은 이름의 버거가 있는지 (B-04). burger 테이블의 UNIQUE(brand_id, name) 에 걸리기 전에 미리 알려 주려고 쓴다.
+     *
+     * @param exceptId 검사에서 뺄 버거 번호 (수정할 때의 자기 자신). 없으면 null
+     */
+    public boolean existsName(int brandId, String name, Integer exceptId) throws SQLException {
+        String sql = "SELECT 1 FROM burger WHERE brand_id = ? AND name = ? AND burger_id <> ?";
+        try (Connection con = DB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, brandId);
+            ps.setString(2, name);
+            ps.setInt(3, exceptId == null ? 0 : exceptId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    /**
+     * 버거를 추가한다 (B-04).
+     *
+     * @return 새 버거 번호
+     */
+    public int insert(Burger b) throws SQLException {
+        String sql = "INSERT INTO burger (brand_id, name, description, image_url, patty_type, price, weight_g, "
+                   + "calories_kcal, protein_g, sat_fat_g, sugar_g, sodium_mg) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection con = DB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            bind(ps, b);
+            ps.executeUpdate();
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                keys.next();
+                return keys.getInt(1);
+            }
+        }
+    }
+
+    /** 버거의 내용을 바꾼다 (B-04). 조회수 · 추천은 건드리지 않는다. */
+    public void update(int burgerId, Burger b) throws SQLException {
+        String sql = "UPDATE burger SET brand_id = ?, name = ?, description = ?, image_url = ?, patty_type = ?, "
+                   + "price = ?, weight_g = ?, calories_kcal = ?, protein_g = ?, sat_fat_g = ?, sugar_g = ?, "
+                   + "sodium_mg = ? WHERE burger_id = ?";
+        try (Connection con = DB.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            bind(ps, b);
+            ps.setInt(13, burgerId);
+            ps.executeUpdate();
+        }
+    }
+
+    /** 버거를 지운다 (B-04). 추천과 게시글의 버거 태그는 ON DELETE CASCADE 로 함께 지워진다(게시글은 남는다). */
+    public void delete(int burgerId) throws SQLException {
+        try (Connection con = DB.getConnection();
+             PreparedStatement ps = con.prepareStatement("DELETE FROM burger WHERE burger_id = ?")) {
+            ps.setInt(1, burgerId);
+            ps.executeUpdate();
+        }
+    }
+
+    /** insert · update 가 함께 쓰는 값 12개를 차례로 넣는다. null 은 NULL 로 들어간다. */
+    private static void bind(PreparedStatement ps, Burger b) throws SQLException {
+        ps.setInt(1, b.getBrandId());
+        ps.setString(2, b.getName());
+        ps.setString(3, b.getDescription());
+        ps.setString(4, b.getImageUrl());
+        ps.setString(5, b.getPattyType());
+        ps.setObject(6, b.getPrice());
+        ps.setObject(7, b.getWeightG());
+        ps.setObject(8, b.getCaloriesKcal());
+        ps.setBigDecimal(9, b.getProteinG());
+        ps.setBigDecimal(10, b.getSatFatG());
+        ps.setBigDecimal(11, b.getSugarG());
+        ps.setObject(12, b.getSodiumMg());
     }
 
     /** 조회수를 1 올린다. */
