@@ -2,8 +2,7 @@ package ohburger.web;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,9 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import ohburger.common.Auth;
+import ohburger.common.PendingForm;
+import ohburger.common.ViewCounter;
 import ohburger.dao.CommentDao;
 import ohburger.dao.PostDao;
-import ohburger.dao.PostLikeDao;
+import ohburger.dao.LikeDao;
 import ohburger.model.Comment;
 import ohburger.model.LoginMember;
 import ohburger.model.Post;
@@ -26,11 +27,9 @@ public class PostDetailServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
 
-    /** 세션에 이미 조회한 글 번호를 담아 두는 속성 이름 (조회수 중복 증가 방지). */
-    private static final String VIEWED = "viewedPosts";
 
     private final PostDao postDao = new PostDao();
-    private final PostLikeDao likeDao = new PostLikeDao();
+    private final LikeDao likeDao = LikeDao.POST;
     private final CommentDao commentDao = new CommentDao();
 
     @Override
@@ -50,7 +49,7 @@ public class PostDetailServlet extends HttpServlet {
                 return;
             }
             // 같은 세션에서 같은 글은 조회수를 한 번만 올린다
-            if (markViewed(req.getSession(), id)) {
+            if (ViewCounter.firstView(req.getSession(), "post", id)) {
                 postDao.increaseViewCount(id);
                 post.setViewCount(post.getViewCount() + 1);
             }
@@ -70,22 +69,16 @@ public class PostDetailServlet extends HttpServlet {
             req.setAttribute("commentDraft", session.getAttribute(CommentWriteServlet.DRAFT + id));
             session.removeAttribute(CommentWriteServlet.ERROR + id);
             session.removeAttribute(CommentWriteServlet.DRAFT + id);
+
+            // 세션이 만료돼 로그인을 다시 하고 돌아온 경우: 이 글에 쓰던 댓글을 입력란에 되살린다
+            Map<String, String[]> pending = PendingForm.take(req, "/comments/write");
+            if (pending != null && String.valueOf(id).equals(PendingForm.first(pending, "postId"))) {
+                req.setAttribute("commentDraft", PendingForm.first(pending, "content"));
+                req.setAttribute("commentRestored", true);
+            }
         } catch (SQLException e) {
             throw new ServletException("게시글 상세 조회 실패", e);
         }
         req.getRequestDispatcher("/WEB-INF/views/post.jsp").forward(req, resp);
-    }
-
-    /** 이 세션에서 처음 보는 글이면 기록하고 true 를 돌려준다. */
-    private static boolean markViewed(HttpSession session, int postId) {
-        synchronized (session) {
-            @SuppressWarnings("unchecked")
-            Set<Integer> viewed = (Set<Integer>) session.getAttribute(VIEWED);
-            if (viewed == null) {
-                viewed = new HashSet<>();
-                session.setAttribute(VIEWED, viewed);
-            }
-            return viewed.add(postId);
-        }
     }
 }

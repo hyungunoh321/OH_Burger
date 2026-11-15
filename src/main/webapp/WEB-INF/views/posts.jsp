@@ -8,22 +8,11 @@
 <h1 class="page-title">게시판</h1>
 <p class="page-desc">꿀조합과 꿀팁을 공유해 보세요.</p>
 
-<%-- 분류 탭: 검색어 · 정렬 · 버거 조건은 유지하고 쪽 번호는 처음으로 --%>
+<%-- 분류 탭: 검색어 · 정렬 · 버거 조건은 유지하고 쪽 번호는 처음으로. 주소는 서블릿이 만들어 준다 --%>
 <div class="tabs">
-  <c:url var="u" value="/posts">
-    <c:if test="${not empty q}"><c:param name="q" value="${q}" /></c:if>
-    <c:if test="${sort eq 'likes'}"><c:param name="sort" value="likes" /></c:if>
-    <c:if test="${not empty burger}"><c:param name="burger" value="${burger.id}" /></c:if>
-  </c:url>
-  <a class="tab ${empty category ? 'on' : ''}" href="${u}">전체</a>
+  <a class="tab ${empty category ? 'on' : ''}" href="${ctx}<c:out value="${tabHrefs['']}" />">전체</a>
   <c:forEach var="cat" items="${categoryLabels}">
-    <c:url var="u" value="/posts">
-      <c:param name="category" value="${cat.key}" />
-      <c:if test="${not empty q}"><c:param name="q" value="${q}" /></c:if>
-      <c:if test="${sort eq 'likes'}"><c:param name="sort" value="likes" /></c:if>
-      <c:if test="${not empty burger}"><c:param name="burger" value="${burger.id}" /></c:if>
-    </c:url>
-    <a class="tab ${cat.key eq category ? 'on' : ''}" href="${u}">${cat.value}</a>
+    <a class="tab ${cat.key eq category ? 'on' : ''}" href="${ctx}<c:out value="${tabHrefs[cat.key]}" />">${cat.value}</a>
   </c:forEach>
 </div>
 
@@ -46,14 +35,9 @@
 
 <%-- 버거 상세의 "전체 보기"로 들어온 경우: 어떤 버거로 거르는 중인지 보여 주고 풀 수 있게 한다 --%>
 <c:if test="${not empty burger}">
-  <c:url var="u" value="/posts">
-    <c:if test="${not empty category}"><c:param name="category" value="${category}" /></c:if>
-    <c:if test="${not empty q}"><c:param name="q" value="${q}" /></c:if>
-    <c:if test="${sort eq 'likes'}"><c:param name="sort" value="likes" /></c:if>
-  </c:url>
   <p class="hint">
     <a class="tag" href="${ctx}/burgers/detail?id=${burger.id}">🍔 <c:out value="${burger.brandName}" /> <c:out value="${burger.name}" /></a>
-    버거가 태그된 글만 보는 중입니다. <a href="${u}" style="color:var(--brand)">조건 풀기</a>
+    버거가 태그된 글만 보는 중입니다. <a href="${ctx}<c:out value="${clearBurgerHref}" />" style="color:var(--brand)">조건 풀기</a>
   </p>
 </c:if>
 
@@ -88,34 +72,13 @@
 <c:if test="${totalPages > 1}">
   <div class="pager">
     <c:if test="${page > 1}">
-      <c:url var="u" value="/posts">
-        <c:if test="${not empty category}"><c:param name="category" value="${category}" /></c:if>
-        <c:if test="${not empty q}"><c:param name="q" value="${q}" /></c:if>
-        <c:if test="${sort eq 'likes'}"><c:param name="sort" value="likes" /></c:if>
-        <c:if test="${not empty burger}"><c:param name="burger" value="${burger.id}" /></c:if>
-        <c:param name="page" value="${page - 1}" />
-      </c:url>
-      <a href="${u}" aria-label="이전 쪽">‹</a>
+      <a href="${ctx}<c:out value="${prevHref}" />" aria-label="이전 쪽">‹</a>
     </c:if>
     <c:forEach var="n" begin="${startPage}" end="${endPage}">
-      <c:url var="u" value="/posts">
-        <c:if test="${not empty category}"><c:param name="category" value="${category}" /></c:if>
-        <c:if test="${not empty q}"><c:param name="q" value="${q}" /></c:if>
-        <c:if test="${sort eq 'likes'}"><c:param name="sort" value="likes" /></c:if>
-        <c:if test="${not empty burger}"><c:param name="burger" value="${burger.id}" /></c:if>
-        <c:param name="page" value="${n}" />
-      </c:url>
-      <a class="${n == page ? 'on' : ''}" href="${u}">${n}</a>
+      <a class="${n == page ? 'on' : ''}" href="${ctx}<c:out value="${pageHrefs[n]}" />">${n}</a>
     </c:forEach>
     <c:if test="${page < totalPages}">
-      <c:url var="u" value="/posts">
-        <c:if test="${not empty category}"><c:param name="category" value="${category}" /></c:if>
-        <c:if test="${not empty q}"><c:param name="q" value="${q}" /></c:if>
-        <c:if test="${sort eq 'likes'}"><c:param name="sort" value="likes" /></c:if>
-        <c:if test="${not empty burger}"><c:param name="burger" value="${burger.id}" /></c:if>
-        <c:param name="page" value="${page + 1}" />
-      </c:url>
-      <a href="${u}" aria-label="다음 쪽">›</a>
+      <a href="${ctx}<c:out value="${nextHref}" />" aria-label="다음 쪽">›</a>
     </c:if>
   </div>
 </c:if>

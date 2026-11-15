@@ -1,9 +1,21 @@
 package ohburger.common;
 
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletResponse;
+
 /** JSON 응답을 직접 만들 때 쓰는 작은 도구. 외부 라이브러리 없이 문자열만 안전하게 감싼다. */
 public final class Json {
 
     private Json() {
+    }
+
+    /** 상태 코드와 함께 JSON 본문을 응답으로 쓴다. 브라우저가 저장해 두지 않게 한다. */
+    public static void write(HttpServletResponse resp, int status, String body) throws IOException {
+        resp.setStatus(status);
+        resp.setContentType("application/json; charset=UTF-8");
+        resp.setHeader("Cache-Control", "no-store");
+        resp.getWriter().write(body);
     }
 
     /**

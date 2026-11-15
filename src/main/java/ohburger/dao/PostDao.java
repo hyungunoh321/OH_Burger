@@ -14,7 +14,6 @@ import java.util.Map;
 
 import ohburger.common.DB;
 import ohburger.model.Post;
-import ohburger.model.PostSummary;
 
 /** post · post_burger 테이블 (P-01 ~ P-04, B-02 의 태그된 글 목록). */
 public class PostDao {
@@ -53,8 +52,7 @@ public class PostDao {
                 params.add(category);
             }
             if (keyword != null) {
-                // 검색어 안의 %, _ 가 와일드카드로 쓰이지 않게 ! 로 이스케이프한다
-                String like = "%" + keyword.replace("!", "!!").replace("%", "!%").replace("_", "!_") + "%";
+                String like = DB.likePattern(keyword);
                 sql.append("AND (p.title LIKE ? ESCAPE '!' OR p.content LIKE ? ESCAPE '!') ");
                 params.add(like);
                 params.add(like);
@@ -171,6 +169,8 @@ public class PostDao {
             } catch (SQLException e) {
                 con.rollback();
                 throw e;
+            } finally {
+                con.setAutoCommit(true); // 연결이 풀로 돌아가므로 원래 상태로 되돌린다
             }
         }
     }
@@ -198,6 +198,8 @@ public class PostDao {
             } catch (SQLException e) {
                 con.rollback();
                 throw e;
+            } finally {
+                con.setAutoCommit(true); // 연결이 풀로 돌아가므로 원래 상태로 되돌린다
             }
         }
     }
@@ -211,26 +213,19 @@ public class PostDao {
         }
     }
 
-    /** 버거가 태그된 게시글을 추천 많은 순으로 limit 개 돌려준다 (버거 상세용). */
-    public List<PostSummary> findTopByBurger(int burgerId, int limit) throws SQLException {
-        String sql =
-                "SELECT p.post_id, p.category, p.title, m.nickname, "
-              + "(SELECT COUNT(*) FROM post_like pl WHERE pl.post_id = p.post_id) AS like_count, "
-              + "(SELECT COUNT(*) FROM post_comment pc WHERE pc.post_id = p.post_id) AS comment_count "
-              + "FROM post_burger pb "
-              + "JOIN post p ON p.post_id = pb.post_id "
-              + "JOIN member m ON m.member_id = p.member_id "
-              + "WHERE pb.burger_id = ? "
-              + "ORDER BY like_count DESC, p.created_at DESC LIMIT ?";
-        List<PostSummary> list = new ArrayList<>();
+    /** 버거가 태그된 게시글을 추천 많은 순으로 limit 개 돌려준다 (버거 상세용). 본문 · 태그는 싣지 않는다. */
+    public List<Post> findTopByBurger(int burgerId, int limit) throws SQLException {
+        String sql = "SELECT " + COLUMNS + FROM
+                   + "WHERE EXISTS (SELECT 1 FROM post_burger pb WHERE pb.post_id = p.post_id AND pb.burger_id = ?) "
+                   + "ORDER BY like_count DESC, p.created_at DESC, p.post_id DESC LIMIT ?";
+        List<Post> list = new ArrayList<>();
         try (Connection con = DB.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, burgerId);
             ps.setInt(2, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    list.add(new PostSummary(rs.getInt("post_id"), rs.getString("category"), rs.getString("title"),
-                            rs.getString("nickname"), rs.getInt("like_count"), rs.getInt("comment_count")));
+                    list.add(map(rs));
                 }
             }
         }

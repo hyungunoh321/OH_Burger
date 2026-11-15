@@ -10,8 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ohburger.common.Auth;
+import ohburger.common.Json;
 import ohburger.dao.BurgerDao;
-import ohburger.dao.BurgerLikeDao;
+import ohburger.dao.LikeDao;
 import ohburger.model.LoginMember;
 
 /**
@@ -28,45 +29,38 @@ public class BurgerLikeServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private final BurgerDao burgerDao = new BurgerDao();
-    private final BurgerLikeDao likeDao = new BurgerLikeDao();
+    private final LikeDao likeDao = LikeDao.BURGER;
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // 다른 사이트의 양식(form)으로는 이 헤더를 붙일 수 없다. 남의 사이트가 로그인한 회원 몰래 추천을 누르게 하는 것을 막는다
         if (!"fetch".equals(req.getHeader("X-Requested-With"))) {
-            json(resp, HttpServletResponse.SC_FORBIDDEN, "{\"error\":\"forbidden\"}");
+            Json.write(resp, HttpServletResponse.SC_FORBIDDEN, "{\"error\":\"forbidden\"}");
             return;
         }
         LoginMember member = Auth.current(req);
         if (member == null) {
-            json(resp, HttpServletResponse.SC_UNAUTHORIZED, "{\"error\":\"login\"}");
+            Json.write(resp, HttpServletResponse.SC_UNAUTHORIZED, "{\"error\":\"login\"}");
             return;
         }
         int burgerId;
         try {
             burgerId = Integer.parseInt(req.getParameter("id"));
         } catch (NumberFormatException e) {
-            json(resp, HttpServletResponse.SC_NOT_FOUND, "{\"error\":\"notfound\"}");
+            Json.write(resp, HttpServletResponse.SC_NOT_FOUND, "{\"error\":\"notfound\"}");
             return;
         }
 
         try {
             if (burgerDao.findById(burgerId) == null) {
-                json(resp, HttpServletResponse.SC_NOT_FOUND, "{\"error\":\"notfound\"}");
+                Json.write(resp, HttpServletResponse.SC_NOT_FOUND, "{\"error\":\"notfound\"}");
                 return;
             }
             boolean liked = likeDao.toggle(member.getId(), burgerId);
             int likeCount = likeDao.count(burgerId);
-            json(resp, HttpServletResponse.SC_OK, "{\"liked\":" + liked + ",\"likeCount\":" + likeCount + "}");
+            Json.write(resp, HttpServletResponse.SC_OK, "{\"liked\":" + liked + ",\"likeCount\":" + likeCount + "}");
         } catch (SQLException e) {
             throw new ServletException("버거 추천 처리 실패", e);
         }
-    }
-
-    private static void json(HttpServletResponse resp, int status, String body) throws IOException {
-        resp.setStatus(status);
-        resp.setContentType("application/json; charset=UTF-8");
-        resp.setHeader("Cache-Control", "no-store");
-        resp.getWriter().write(body);
     }
 }

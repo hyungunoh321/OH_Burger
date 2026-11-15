@@ -73,9 +73,7 @@ public class RouletteCandidatesServlet extends HttpServlet {
         }
         json.append("]}");
 
-        resp.setContentType("application/json; charset=UTF-8");
-        resp.setHeader("Cache-Control", "no-store");
-        resp.getWriter().write(json.toString());
+        Json.write(resp, HttpServletResponse.SC_OK, json.toString());
     }
 
     private static Integer positiveInt(String s) {
