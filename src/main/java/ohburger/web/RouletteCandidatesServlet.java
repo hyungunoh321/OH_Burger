@@ -21,7 +21,7 @@ import ohburger.model.Burger;
  *
  * 요청: GET /roulette/candidates, 파라미터는 모두 선택 사항
  *       brand(브랜드 번호, 여러 개), patty(패티 코드), maxPrice(가격 상한), maxKcal(열량 상한)
- * 응답: {"burgers": [{"id", "brand", "name", "price", "kcal", "protein"}, ...]}  값이 없으면 null
+ * 응답: {"burgers": [{"id", "brand", "name", "image", "price", "kcal", "protein"}, ...]}  값이 없으면 null
  */
 @WebServlet("/roulette/candidates")
 public class RouletteCandidatesServlet extends HttpServlet {
@@ -66,6 +66,7 @@ public class RouletteCandidatesServlet extends HttpServlet {
             json.append("{\"id\":").append(b.getId())
                 .append(",\"brand\":").append(Json.quote(b.getBrandName()))
                 .append(",\"name\":").append(Json.quote(b.getName()))
+                .append(",\"image\":").append(b.getImageUrl() == null ? null : Json.quote(b.getImageUrl()))
                 .append(",\"price\":").append(b.getPrice())          // 숫자 또는 null
                 .append(",\"kcal\":").append(b.getCaloriesKcal())
                 .append(",\"protein\":").append(b.getProteinG() == null ? null : b.getProteinG().toPlainString())

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <jsp:include page="/WEB-INF/views/header.jsp">
   <jsp:param name="title" value="${burger.name}" />
@@ -9,7 +10,7 @@
 <p class="hint"><a href="${ctx}/burgers">버거 도감</a> › <a href="${ctx}/burgers?brand=${burger.brandId}"><c:out value="${burger.brandName}" /></a></p>
 
 <div class="detail">
-  <div><div class="thumb lg" aria-hidden="true"></div></div>
+  <div><t:thumb url="${burger.imageUrl}" large="true" /></div>
   <div>
     <span class="tag"><c:out value="${burger.brandName}" /></span>
     <h1><c:out value="${burger.name}" /></h1>

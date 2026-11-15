@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <jsp:include page="/WEB-INF/views/header.jsp">
   <jsp:param name="title" value="버거 도감" />
@@ -47,7 +48,7 @@
     <div class="grid">
       <c:forEach var="b" items="${burgers}">
         <a class="card burger-card" href="${ctx}/burgers/detail?id=${b.id}">
-          <div class="thumb" aria-hidden="true"></div>
+          <t:thumb url="${b.imageUrl}" />
           <div>
             <div class="name"><c:out value="${b.name}" /></div>
             <div class="meta"><c:out value="${b.brandName}" /> · ${b.pattyLabel}</div>
