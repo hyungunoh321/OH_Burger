@@ -80,6 +80,7 @@
                placeholder="댓글을 입력하세요 (${commentMax}자 이내)" aria-label="댓글 내용">
         <button class="btn primary" type="submit">등록</button>
       </form>
+      <c:if test="${commentRestored}"><p class="hint">로그인이 풀려 다시 로그인했습니다. 쓰던 댓글을 되살렸으니 확인하고 등록해 주세요.</p></c:if>
       <c:if test="${not empty commentError}"><p class="error"><c:out value="${commentError}" /></p></c:if>
     </c:when>
     <c:otherwise>

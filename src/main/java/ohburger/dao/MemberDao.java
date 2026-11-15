@@ -64,6 +64,20 @@ public class MemberDao {
         }
     }
 
+    /** 회원 번호로 로그인 정보(닉네임 · 권한)를 다시 읽는다. 회원이 없으면 null. */
+    public LoginMember findById(int memberId) throws SQLException {
+        try (Connection con = DB.getConnection();
+             PreparedStatement ps = con.prepareStatement(
+                     "SELECT member_id, nickname, role FROM member WHERE member_id = ?")) {
+            ps.setInt(1, memberId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next()
+                        ? new LoginMember(rs.getInt("member_id"), rs.getString("nickname"), rs.getString("role"))
+                        : null;
+            }
+        }
+    }
+
     /** 아이디로 계정을 찾는다. 없으면 null. */
     public Account findByLoginId(String loginId) throws SQLException {
         try (Connection con = DB.getConnection();

@@ -2,6 +2,7 @@ package ohburger.web;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ohburger.common.Auth;
+import ohburger.common.PendingForm;
 import ohburger.dao.BurgerDao;
 import ohburger.dao.PostDao;
 import ohburger.model.Burger;
@@ -32,6 +34,13 @@ public class PostWriteServlet extends HttpServlet {
                 burger = burgerDao.findById(Integer.parseInt(req.getParameter("burger")));
             } catch (NumberFormatException e) {
                 // 없거나 숫자가 아니면 태그 없이 시작
+            }
+            // 세션이 만료돼 로그인을 다시 하고 돌아온 경우: 쓰던 내용을 되살린다
+            Map<String, String[]> pending = PendingForm.take(req, "/posts/write");
+            if (pending != null) {
+                req.setAttribute("restored", true);
+                show(req, resp, PostForm.from(pending, burgerDao));
+                return;
             }
             show(req, resp, PostForm.empty(burger));
         } catch (SQLException e) {

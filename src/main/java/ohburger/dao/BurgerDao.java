@@ -67,9 +67,8 @@ public class BurgerDao {
         List<Object> params = new ArrayList<>();
 
         if (keyword != null && !keyword.isEmpty()) {
-            // 검색어 안의 %, _ 가 와일드카드로 쓰이지 않게 ! 로 이스케이프한다
             sql.append("AND b.name LIKE ? ESCAPE '!' ");
-            params.add("%" + keyword.replace("!", "!!").replace("%", "!%").replace("_", "!_") + "%");
+            params.add(DB.likePattern(keyword));
         }
         if (brandIds != null && !brandIds.isEmpty()) {
             sql.append("AND b.brand_id IN (")

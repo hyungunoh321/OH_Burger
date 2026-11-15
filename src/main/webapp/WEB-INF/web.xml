@@ -13,6 +13,49 @@
     <tracking-mode>COOKIE</tracking-mode>
   </session-config>
 
+  <!-- 필터. 여기 적힌 filter-mapping 순서대로 돈다.
+       순서가 중요해서 @WebFilter 대신 여기에 적는다:
+       인코딩 → 다른 사이트 요청 차단 → 로그인 정보 최신화 → 로그인 검사 -->
+  <filter>
+    <filter-name>encoding</filter-name>
+    <filter-class>ohburger.common.EncodingFilter</filter-class>
+  </filter>
+  <filter>
+    <filter-name>csrf</filter-name>
+    <filter-class>ohburger.common.CsrfFilter</filter-class>
+  </filter>
+  <filter>
+    <filter-name>sessionRefresh</filter-name>
+    <filter-class>ohburger.common.SessionRefreshFilter</filter-class>
+  </filter>
+  <filter>
+    <filter-name>login</filter-name>
+    <filter-class>ohburger.common.LoginFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>encoding</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>csrf</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>sessionRefresh</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <!-- 로그인이 필요한 주소. 로그인이 필요한 기능을 새로 만들면 여기에 추가한다 -->
+  <filter-mapping>
+    <filter-name>login</filter-name>
+    <url-pattern>/posts/write</url-pattern>
+    <url-pattern>/posts/edit</url-pattern>
+    <url-pattern>/posts/delete</url-pattern>
+    <url-pattern>/comments/*</url-pattern>
+    <url-pattern>/mypage</url-pattern>
+    <url-pattern>/admin/*</url-pattern>
+  </filter-mapping>
+
   <!-- 오류가 나면 Tomcat 기본 화면 대신 ErrorServlet(/error)이 전용 화면을 보여 준다.
        예외 내용은 화면에 내지 않고 서버 로그에만 남긴다 -->
   <error-page>

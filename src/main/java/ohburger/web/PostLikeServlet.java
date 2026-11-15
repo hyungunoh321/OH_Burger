@@ -10,8 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ohburger.common.Auth;
+import ohburger.common.Json;
 import ohburger.dao.PostDao;
-import ohburger.dao.PostLikeDao;
+import ohburger.dao.LikeDao;
 import ohburger.model.LoginMember;
 import ohburger.model.Post;
 
@@ -27,17 +28,17 @@ public class PostLikeServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private final PostDao postDao = new PostDao();
-    private final PostLikeDao likeDao = new PostLikeDao();
+    private final LikeDao likeDao = LikeDao.POST;
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (!"fetch".equals(req.getHeader("X-Requested-With"))) {
-            json(resp, HttpServletResponse.SC_FORBIDDEN, "{\"error\":\"forbidden\"}");
+            Json.write(resp, HttpServletResponse.SC_FORBIDDEN, "{\"error\":\"forbidden\"}");
             return;
         }
         LoginMember member = Auth.current(req);
         if (member == null) {
-            json(resp, HttpServletResponse.SC_UNAUTHORIZED, "{\"error\":\"login\"}");
+            Json.write(resp, HttpServletResponse.SC_UNAUTHORIZED, "{\"error\":\"login\"}");
             return;
         }
 
@@ -49,25 +50,18 @@ public class PostLikeServlet extends HttpServlet {
                 // 아래에서 404
             }
             if (post == null) {
-                json(resp, HttpServletResponse.SC_NOT_FOUND, "{\"error\":\"notfound\"}");
+                Json.write(resp, HttpServletResponse.SC_NOT_FOUND, "{\"error\":\"notfound\"}");
                 return;
             }
             if (post.getMemberId() == member.getId()) {
-                json(resp, HttpServletResponse.SC_FORBIDDEN, "{\"error\":\"own\"}"); // 자기 글은 추천할 수 없다
+                Json.write(resp, HttpServletResponse.SC_FORBIDDEN, "{\"error\":\"own\"}"); // 자기 글은 추천할 수 없다
                 return;
             }
             boolean liked = likeDao.toggle(member.getId(), post.getId());
             int likeCount = likeDao.count(post.getId());
-            json(resp, HttpServletResponse.SC_OK, "{\"liked\":" + liked + ",\"likeCount\":" + likeCount + "}");
+            Json.write(resp, HttpServletResponse.SC_OK, "{\"liked\":" + liked + ",\"likeCount\":" + likeCount + "}");
         } catch (SQLException e) {
             throw new ServletException("게시글 추천 처리 실패", e);
         }
-    }
-
-    private static void json(HttpServletResponse resp, int status, String body) throws IOException {
-        resp.setStatus(status);
-        resp.setContentType("application/json; charset=UTF-8");
-        resp.setHeader("Cache-Control", "no-store");
-        resp.getWriter().write(body);
     }
 }

@@ -9,6 +9,10 @@
 <h1 class="page-title"><c:out value="${heading}" /></h1>
 <p class="page-desc">버거를 태그하면 해당 버거 상세 화면에도 글이 노출됩니다.</p>
 
+<c:if test="${restored}">
+  <p class="notice">로그인이 풀려 다시 로그인했습니다. 쓰던 내용을 되살렸으니 확인하고 등록해 주세요.</p>
+</c:if>
+
 <form class="card pad" method="post" action="${ctx}${action}">
   <label class="field">
     <span>분류</span>
@@ -100,7 +104,13 @@
       input.value = '';
     }
 
-    input.addEventListener('input', tryAdd);
+    // 글자를 치는 도중에는 추가하지 않는다. "리아 불고기"처럼 다른 이름의 앞부분과 같은 이름이
+    // 먼저 걸려서 "리아 불고기 더블(빅불)"을 끝까지 칠 수 없게 되기 때문이다.
+    // 목록에서 고른 경우(insertReplacementText, 또는 inputType 이 없는 경우)에만 바로 추가한다.
+    input.addEventListener('input', function (e) {
+      if (e.inputType === undefined || e.inputType === 'insertReplacementText') tryAdd();
+    });
+    // 직접 다 친 경우에는 칸을 벗어나거나(change) Enter 를 누를 때 추가한다
     input.addEventListener('change', tryAdd);
     // Enter 로 양식이 제출되지 않게 하고 태그 추가만 시도한다
     input.addEventListener('keydown', function (e) {

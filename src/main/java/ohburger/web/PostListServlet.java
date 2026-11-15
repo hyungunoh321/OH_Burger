@@ -1,7 +1,13 @@
 package ohburger.web;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -63,6 +69,24 @@ public class PostListServlet extends HttpServlet {
             req.setAttribute("startPage", startPage);
             req.setAttribute("endPage", endPage);
             req.setAttribute("burger", burger);
+
+            // 화면의 링크 주소. 조건을 하나 더 만들면 href() 한 곳만 고치면 된다
+            Integer filterBurgerId = (burger == null) ? null : burger.getId();
+            Map<String, String> tabHrefs = new LinkedHashMap<>();   // 분류 코드 → 그 분류 탭 주소 ("" 는 전체)
+            tabHrefs.put("", href(null, q, byLikes, filterBurgerId, null));
+            for (String code : Post.CATEGORY_LABELS.keySet()) {
+                tabHrefs.put(code, href(code, q, byLikes, filterBurgerId, null));
+            }
+            Map<Integer, String> pageHrefs = new LinkedHashMap<>(); // 쪽 번호 → 주소
+            for (int n = startPage; n <= endPage; n++) {
+                pageHrefs.put(n, href(category, q, byLikes, filterBurgerId, n));
+            }
+            req.setAttribute("tabHrefs", tabHrefs);
+            req.setAttribute("pageHrefs", pageHrefs);
+            // 이전 · 다음 쪽은 따로 넘긴다 (EL 에서 page - 1 은 Long 이 돼서 위 맵의 Integer 키와 맞지 않는다)
+            req.setAttribute("prevHref", href(category, q, byLikes, filterBurgerId, page - 1));
+            req.setAttribute("nextHref", href(category, q, byLikes, filterBurgerId, page + 1));
+            req.setAttribute("clearBurgerHref", href(category, q, byLikes, null, null));
         } catch (SQLException e) {
             throw new ServletException("게시글 목록 조회 실패", e);
         }
@@ -71,6 +95,32 @@ public class PostListServlet extends HttpServlet {
         req.setAttribute("q", q);
         req.setAttribute("sort", byLikes ? "likes" : "latest");
         req.getRequestDispatcher("/WEB-INF/views/posts.jsp").forward(req, resp);
+    }
+
+    /**
+     * 조건을 붙인 게시글 목록 주소(컨텍스트 경로 제외)를 만든다. null · 빈 값인 조건은 붙이지 않는다.
+     *
+     * @param page 쪽 번호. null 이면 붙이지 않는다(첫 쪽)
+     */
+    private static String href(String category, String q, boolean byLikes, Integer burgerId, Integer page)
+            throws UnsupportedEncodingException {
+        List<String> parts = new ArrayList<>();
+        if (category != null) {
+            parts.add("category=" + category);
+        }
+        if (q != null && !q.isEmpty()) {
+            parts.add("q=" + URLEncoder.encode(q, "UTF-8"));
+        }
+        if (byLikes) {
+            parts.add("sort=likes");
+        }
+        if (burgerId != null) {
+            parts.add("burger=" + burgerId);
+        }
+        if (page != null) {
+            parts.add("page=" + page);
+        }
+        return parts.isEmpty() ? "/posts" : "/posts?" + String.join("&", parts);
     }
 
     private static Integer parseInt(String s) {

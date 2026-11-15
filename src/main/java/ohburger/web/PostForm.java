@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import ohburger.common.PendingForm;
 import ohburger.dao.BurgerDao;
 import ohburger.model.Burger;
 import ohburger.model.Post;
@@ -48,15 +49,24 @@ public class PostForm {
 
     /** 요청에서 입력값을 읽고 검사한다. 결과는 hasErrors() 로 확인한다. */
     public static PostForm fromRequest(HttpServletRequest req, BurgerDao burgerDao) throws SQLException {
+        return from(req.getParameterMap(), burgerDao);
+    }
+
+    /**
+     * 입력값 맵을 읽고 검사한다. 로그인이 풀려 맡아 두었던 입력값(PendingForm)을 되살릴 때도 쓴다.
+     *
+     * @param params 입력 칸 이름 → 값들 (HttpServletRequest.getParameterMap 과 같은 모양)
+     */
+    public static PostForm from(Map<String, String[]> params, BurgerDao burgerDao) throws SQLException {
         PostForm form = new PostForm();
 
-        form.category = req.getParameter("category");
+        form.category = PendingForm.first(params, "category");
         if (!Post.CATEGORY_LABELS.containsKey(form.category)) {
             form.category = null;
             form.errors.put("category", "분류를 선택해 주세요.");
         }
 
-        String title = req.getParameter("title");
+        String title = PendingForm.first(params, "title");
         form.title = (title == null) ? "" : title.trim();
         if (form.title.isEmpty()) {
             form.errors.put("title", "제목을 입력해 주세요.");
@@ -65,7 +75,7 @@ public class PostForm {
         }
 
         // 브라우저가 줄바꿈을 \r\n 으로 보내므로 글자 수가 달라지지 않게 \n 으로 맞춘다
-        String content = req.getParameter("content");
+        String content = PendingForm.first(params, "content");
         form.content = (content == null) ? "" : content.replace("\r\n", "\n");
         if (form.content.trim().isEmpty()) {
             form.errors.put("content", "내용을 입력해 주세요.");
@@ -75,7 +85,7 @@ public class PostForm {
 
         // 버거 태그: 같은 번호는 한 번만, 실제로 있는 버거만 받는다
         Set<Integer> ids = new LinkedHashSet<>();
-        String[] values = req.getParameterValues("burgerId");
+        String[] values = params.get("burgerId");
         if (values != null) {
             for (String v : values) {
                 try {
@@ -85,14 +95,18 @@ public class PostForm {
                 }
             }
         }
+        // 개수를 먼저 검사한다. 번호를 수천 개 붙여 보내도 DB 조회는 최대 TAG_MAX 번만 한다
+        if (ids.size() > Post.TAG_MAX) {
+            form.errors.put("tags", "버거는 최대 " + Post.TAG_MAX + "개까지 태그할 수 있습니다.");
+        }
         for (int id : ids) {
+            if (form.tags.size() == Post.TAG_MAX) {
+                break;
+            }
             Burger burger = burgerDao.findById(id);
             if (burger != null) {
                 form.tags.add(new Post.Tag(burger.getId(), burger.getName(), burger.getBrandName()));
             }
-        }
-        if (form.tags.size() > Post.TAG_MAX) {
-            form.errors.put("tags", "버거는 최대 " + Post.TAG_MAX + "개까지 태그할 수 있습니다.");
         }
         return form;
     }
