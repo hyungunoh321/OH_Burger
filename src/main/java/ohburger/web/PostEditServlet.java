@@ -2,6 +2,7 @@ package ohburger.web;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ohburger.common.Auth;
+import ohburger.common.PendingForm;
 import ohburger.dao.BurgerDao;
 import ohburger.dao.PostDao;
 import ohburger.model.Post;
@@ -27,9 +29,17 @@ public class PostEditServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             Post post = findOwnPost(req, resp);
-            if (post != null) {
-                show(req, resp, post.getId(), PostForm.of(post));
+            if (post == null) {
+                return;
             }
+            // 세션이 만료돼 로그인을 다시 하고 돌아온 경우: 이 글을 고치던 내용이면 되살린다
+            Map<String, String[]> pending = PendingForm.take(req, "/posts/edit");
+            if (pending != null && String.valueOf(post.getId()).equals(PendingForm.first(pending, "id"))) {
+                req.setAttribute("restored", true);
+                show(req, resp, post.getId(), PostForm.from(pending, burgerDao));
+                return;
+            }
+            show(req, resp, post.getId(), PostForm.of(post));
         } catch (SQLException e) {
             throw new ServletException("글 수정 화면 준비 실패", e);
         }
