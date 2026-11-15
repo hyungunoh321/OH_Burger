@@ -25,7 +25,7 @@ public class TierDao {
      */
     private static String sql(Metric metric, String outerWhere) {
         return "WITH score AS ("
-             + "  SELECT b.burger_id, b.name, b.brand_id, br.name AS brand_name, " + metric.getSqlExpr() + " AS val"
+             + "  SELECT b.burger_id, b.name, b.image_url, b.brand_id, br.name AS brand_name, " + metric.getSqlExpr() + " AS val"
              + "  FROM burger b JOIN brand br ON br.brand_id = b.brand_id"
              + "), ranked AS ("
              + "  SELECT s.*, (RANK() OVER (ORDER BY val " + (metric.isHigherIsBetter() ? "DESC" : "ASC") + ") - 1)"
@@ -33,7 +33,7 @@ public class TierDao {
              + "  FROM score s"
              + "  WHERE val IS NOT NULL" + (metric.isExcludeZero() ? " AND val > 0" : "")
              + ") "
-             + "SELECT burger_id, name, brand_name, val,"
+             + "SELECT burger_id, name, image_url, brand_name, val,"
              + "       CASE WHEN p < 0.10 THEN 'S' WHEN p < 0.30 THEN 'A' WHEN p < 0.70 THEN 'B'"
              + "            WHEN p < 0.90 THEN 'C' ELSE 'D' END AS tier "
              + "FROM ranked " + outerWhere + " ORDER BY p, name";
@@ -53,7 +53,7 @@ public class TierDao {
             }
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    list.add(new TierEntry(rs.getInt("burger_id"), rs.getString("name"),
+                    list.add(new TierEntry(rs.getInt("burger_id"), rs.getString("name"), rs.getString("image_url"),
                             rs.getString("brand_name"), rs.getBigDecimal("val"), rs.getString("tier")));
                 }
             }

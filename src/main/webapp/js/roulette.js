@@ -91,6 +91,16 @@
     var card = el('div', 'card result');
     var thumb = el('div', 'thumb');
     thumb.setAttribute('aria-hidden', 'true');
+    if (b.image) {
+      // 사진이 안 뜨면 thumb.tag 와 같이 CSS 버거 표시로 돌아간다
+      var img = el('img');
+      img.alt = '';
+      img.referrerPolicy = 'no-referrer';
+      img.onerror = function () { thumb.classList.remove('has-img'); thumb.removeChild(img); };
+      img.src = b.image;
+      thumb.classList.add('has-img');
+      thumb.appendChild(img);
+    }
     var info = el('div');
     info.style.flex = '1';
     info.appendChild(el('div', 'hint', '오늘의 버거는'));
