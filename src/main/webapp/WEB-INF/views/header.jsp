@@ -22,7 +22,7 @@
   <div class="auth">
     <c:choose>
       <c:when test="${not empty sessionScope.loginMember}">
-        <span class="who"><c:out value="${sessionScope.loginMember.nickname}" /> 님</span>
+        <a class="who" href="${ctx}/mypage" title="마이페이지"><c:out value="${sessionScope.loginMember.nickname}" /> 님</a>
         <form method="post" action="${ctx}/logout"><button class="btn ghost" type="submit">로그아웃</button></form>
       </c:when>
       <c:otherwise>
