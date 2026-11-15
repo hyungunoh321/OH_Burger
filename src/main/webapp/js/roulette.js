@@ -2,7 +2,8 @@
 // 회전 · 당첨 로직은 프로토타입(docs/wireframe/roulette.html)의 것이고, 후보 목록만 서버에서 받는다.
 (function () {
   var MAX = 12; // 룰렛에 올리는 최대 후보 수
-  var COLORS = ['#d9480f', '#f08c00', '#e6b800', '#2f9e44', '#1c7ed6', '#7048e8'];
+  // 버거 재료 색: 토마토, 번, 치즈, 상추, 패티, 구운 번
+  var COLORS = ['#d43a2f', '#e0842a', '#d9a400', '#5f9a2f', '#7a5a44', '#a9621a'];
   var DURATION = 4000; // 회전 시간(ms)
 
   var root = document.getElementById('roulette');
@@ -36,9 +37,9 @@
     g.save();
     g.translate(R, R);
     if (candidates.length === 0) {
-      g.fillStyle = '#efe8dc';
+      g.fillStyle = '#f8eedc';
       g.beginPath(); g.arc(0, 0, R - 10, 0, Math.PI * 2); g.fill();
-      g.fillStyle = '#7d6f60'; g.font = '34px sans-serif'; g.textAlign = 'center';
+      g.fillStyle = '#8a7867'; g.font = '600 34px Pretendard, sans-serif'; g.textAlign = 'center';
       g.fillText(emptyText, 0, 12);
       g.restore();
       return;
@@ -57,14 +58,16 @@
       g.strokeStyle = '#fff'; g.lineWidth = 4; g.stroke();
       g.save();
       g.rotate(i * seg + seg / 2);
-      g.fillStyle = '#fff'; g.font = 'bold 28px sans-serif'; g.textAlign = 'right'; g.textBaseline = 'middle';
+      g.fillStyle = '#fff'; g.font = '700 28px Pretendard, sans-serif'; g.textAlign = 'right'; g.textBaseline = 'middle';
       var name = b.name.length > 9 ? b.name.slice(0, 8) + '…' : b.name;
       g.fillText(name, R - 34, 0);
       g.restore();
     });
     g.restore();
     g.beginPath(); g.arc(R, R, 44, 0, Math.PI * 2);
-    g.fillStyle = '#2b2118'; g.fill();
+    g.fillStyle = '#fffbf4'; g.fill();
+    g.beginPath(); g.arc(R, R, 26, 0, Math.PI * 2);
+    g.fillStyle = '#5a3520'; g.fill();
   }
 
   // 값이 없는(null) 항목은 "정보 없음"으로 보여 준다
@@ -86,7 +89,7 @@
   // 당첨 카드: 버거 정보 + "상세 보기", "다시 돌리기"
   function show(b) {
     var card = el('div', 'card result');
-    var thumb = el('div', 'thumb', '🍔');
+    var thumb = el('div', 'thumb');
     thumb.setAttribute('aria-hidden', 'true');
     var info = el('div');
     info.style.flex = '1';

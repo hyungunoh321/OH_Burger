@@ -36,7 +36,7 @@
     <%-- 고른 버거는 칩으로 보여 주고, 칩 안의 숨은 입력(burgerId)이 서버로 간다. 칩을 누르면 뺀다 --%>
     <div class="chips" id="picked" style="margin-bottom:8px">
       <c:forEach var="t" items="${form.tags}">
-        <button type="button" class="chip on" title="누르면 태그에서 뺍니다">🍔 <c:out value="${t.label}" /> ✕<input type="hidden" name="burgerId" value="${t.burgerId}"></button>
+        <button type="button" class="chip on" title="누르면 태그에서 뺍니다"><c:out value="${t.label}" /> ✕<input type="hidden" name="burgerId" value="${t.burgerId}"></button>
       </c:forEach>
     </div>
     <input class="input" id="tagq" list="burgerlist" autocomplete="off" placeholder="버거 이름을 검색해 선택하세요">
@@ -93,7 +93,7 @@
         chip.type = 'button';
         chip.className = 'chip on';
         chip.title = '누르면 태그에서 뺍니다';
-        chip.textContent = '🍔 ' + option.value + ' ✕'; // textContent 라서 이름에 특수 문자가 있어도 안전하다
+        chip.textContent = option.value + ' ✕'; // textContent 라서 이름에 특수 문자가 있어도 안전하다
         var hidden = document.createElement('input');
         hidden.type = 'hidden';
         hidden.name = 'burgerId';

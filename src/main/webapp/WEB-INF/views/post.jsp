@@ -17,7 +17,7 @@
   <c:if test="${not empty post.tags}">
     <div class="chips" style="margin-bottom:14px">
       <c:forEach var="t" items="${post.tags}">
-        <a class="tag" href="${ctx}/burgers/detail?id=${t.burgerId}">🍔 <c:out value="${t.label}" /></a>
+        <a class="tag" href="${ctx}/burgers/detail?id=${t.burgerId}"><c:out value="${t.label}" /></a>
       </c:forEach>
     </div>
   </c:if>
@@ -28,7 +28,7 @@
   <div class="center" style="margin:20px 0">
     <%-- 추천 토글(P-05). 자기 글은 추천할 수 없어 버튼을 잠근다 (서버에서도 막는다) --%>
     <button class="btn big ${liked ? 'on' : ''}" id="like" type="button" aria-pressed="${liked}"
-            data-url="${ctx}/posts/like" data-id="${post.id}" ${author ? 'disabled' : ''}>👍 추천 <b id="likes">${post.likeCount}</b></button>
+            data-url="${ctx}/posts/like" data-id="${post.id}" ${author ? 'disabled' : ''}>추천 <b id="likes">${post.likeCount}</b></button>
     <c:if test="${author}"><p class="hint">자기 글은 추천할 수 없습니다.</p></c:if>
     <c:url var="loginUrl" value="/login"><c:param name="next" value="/posts/detail?id=${post.id}" /></c:url>
     <p class="hint" id="like-login" hidden>추천하려면 로그인이 필요합니다. <a href="${loginUrl}" style="color:var(--brand)">로그인하러 가기</a></p>
@@ -64,7 +64,7 @@
         <form method="post" action="${ctx}/comments/delete" style="float:right;margin:0"
               onsubmit="return confirm('이 댓글을 삭제할까요?');">
           <input type="hidden" name="id" value="${cm.id}">
-          <button class="btn" type="submit" style="padding:2px 8px;font-size:12px">삭제</button>
+          <button class="btn small" type="submit">삭제</button>
         </form>
       </c:if>
       <div><c:out value="${cm.content}" /></div>

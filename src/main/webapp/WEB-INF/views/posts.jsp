@@ -36,7 +36,7 @@
 <%-- 버거 상세의 "전체 보기"로 들어온 경우: 어떤 버거로 거르는 중인지 보여 주고 풀 수 있게 한다 --%>
 <c:if test="${not empty burger}">
   <p class="hint">
-    <a class="tag" href="${ctx}/burgers/detail?id=${burger.id}">🍔 <c:out value="${burger.brandName}" /> <c:out value="${burger.name}" /></a>
+    <a class="tag" href="${ctx}/burgers/detail?id=${burger.id}"><c:out value="${burger.brandName}" /> <c:out value="${burger.name}" /></a>
     버거가 태그된 글만 보는 중입니다. <a href="${ctx}<c:out value="${clearBurgerHref}" />" style="color:var(--brand)">조건 풀기</a>
   </p>
 </c:if>
