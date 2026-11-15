@@ -94,6 +94,9 @@ main.container { padding-top: 44px; padding-bottom: 72px; min-height: 70vh; }
 }
 .input:focus { outline: 3px solid rgba(246, 185, 59, 0.35); border-color: var(--bun); }
 textarea.input { min-height: 240px; resize: vertical; line-height: 1.6; }
+textarea.input.short { min-height: 96px; }
+/* 짧은 입력 칸 여러 개를 나란히 놓는다 (버거 등록 · 수정) */
+.form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 0 16px; }
 label.field { display: block; margin-bottom: 18px; }
 label.field > span { display: block; font-weight: 700; margin-bottom: 6px; }
 .hint { color: var(--muted); font-size: 13px; }

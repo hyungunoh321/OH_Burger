@@ -18,6 +18,10 @@
     <a href="${ctx}/burgers" class="${param.menu eq 'burgers' ? 'active' : ''}">버거 도감</a>
     <a href="${ctx}/posts" class="${param.menu eq 'posts' ? 'active' : ''}">게시판</a>
     <a href="${ctx}/roulette" class="${param.menu eq 'roulette' ? 'active' : ''}">룰렛</a>
+    <%-- 관리자에게만 보이는 메뉴. 실제 권한 검사는 AdminFilter 가 한다 --%>
+    <c:if test="${sessionScope.loginMember.admin}">
+      <a href="${ctx}/admin/burgers" class="${param.menu eq 'admin' ? 'active' : ''}">버거 관리</a>
+    </c:if>
   </nav>
   <div class="auth">
     <c:choose>

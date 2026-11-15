@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * 로그인이 필요한 주소에 비회원이 오면 로그인 화면으로 보낸다 (M-02).
  * 어떤 주소에 걸리는지는 web.xml 의 filter-mapping 에 있다. 로그인이 필요한 기능을 새로 만들면 거기에 추가한다.
- * 관리자 주소(/admin/*)는 여기서 로그인만 검사하고, 관리자 권한은 해당 서블릿에서 따로 검사한다.
+ * 관리자 주소(/admin/*)는 여기서 로그인만 검사하고, 관리자 권한은 뒤에 도는 AdminFilter 가 검사한다.
  */
 public class LoginFilter implements Filter {
 
@@ -64,6 +64,10 @@ public class LoginFilter implements Filter {
             case "/comments/write":
                 return isNumber(req.getParameter("postId"))
                         ? "/posts/detail?id=" + req.getParameter("postId") + "#comments" : null;
+            case "/admin/burgers/new":
+                return "/admin/burgers/new";
+            case "/admin/burgers/edit":
+                return isNumber(req.getParameter("id")) ? "/admin/burgers/edit?id=" + req.getParameter("id") : null;
             default:
                 return null;
         }

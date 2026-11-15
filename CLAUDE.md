@@ -86,7 +86,7 @@ cp src/main/java/db.properties build/classes/
 
 끝난 것: 코드 검토에서 나온 오류 수정과 정리 (#20). 이때 생긴 공통 장치:
 
-- 필터는 `web.xml` 에 순서대로 적는다(`@WebFilter` 를 쓰지 않는다): 인코딩 → `CsrfFilter`(다른 사이트에서 온 POST 를 403 으로 거절) → `SessionRefreshFilter`(요청마다 회원의 닉네임 · 권한을 DB 에서 다시 읽음, 지워진 회원은 로그아웃) → `LoginFilter`.
+- 필터는 `web.xml` 에 순서대로 적는다(`@WebFilter` 를 쓰지 않는다): 인코딩 → `CsrfFilter`(다른 사이트에서 온 POST 를 403 으로 거절) → `SessionRefreshFilter`(요청마다 회원의 닉네임 · 권한을 DB 에서 다시 읽음, 지워진 회원은 로그아웃) → `LoginFilter` → `AdminFilter`(`/admin/*`).
 - 로그인이 풀린 채 양식을 보내면 `LoginFilter` 가 입력값을 `PendingForm` 에 맡기고, 로그인 뒤 같은 화면에서 되살린다. 양식을 받는 주소를 새로 만들면 `LoginFilter.returnPage` 에 돌아갈 화면을 추가한다.
 - DB 연결은 Tomcat 에 들어 있는 tomcat-jdbc 연결 풀을 쓴다(`DB.java`, 컴파일할 때 `tomcat-jdbc.jar` 필요). 트랜잭션에서 자동 커밋을 끄면 `finally` 에서 다시 켠다.
 - 세션당 1회 조회수는 `ViewCounter.firstView`, 부분 일치 검색어는 `DB.likePattern` 을 쓴다.
@@ -99,7 +99,7 @@ cp src/main/java/db.properties build/classes/
 
 끝난 것: 마이페이지(M-03, `/mypage`) (#11). 머리글의 닉네임이 마이페이지 링크다.
 
-선택 기능(관리자 버거 관리 B-04 (#12))은 시간이 남을 때만 한다.
+끝난 것: 관리자 버거 관리(B-04, `/admin/burgers`, `/admin/burgers/new`, `/admin/burgers/edit`, `/admin/burgers/delete`) (#12). `/admin/*` 는 `AdminFilter` 가 관리자가 아니면 403 으로 거절하므로 관리자 주소를 새로 만들 때 서블릿에서 따로 검사하지 않아도 된다. 등록 · 수정은 `burger_form.jsp` 와 `BurgerForm`(입력 검사)을 함께 쓴다. 관리자 계정은 회원가입 뒤 root 로 `UPDATE member SET role = 'ADMIN' WHERE login_id = '...'` 해서 만든다. `data_burger.sql` 을 다시 실행하면 화면에서 고친 값이 SQL 의 값으로 덮어쓰인다.
 
 ## 작업 방식
 

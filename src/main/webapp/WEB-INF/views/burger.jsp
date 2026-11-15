@@ -70,6 +70,10 @@
       <button class="btn big ${liked ? 'on' : ''}" id="like" type="button" aria-pressed="${liked}"
               data-url="${ctx}/burgers/like" data-id="${burger.id}">추천 <b id="likes">${burger.likeCount}</b></button>
       <span class="hint">조회 <fmt:formatNumber value="${burger.viewCount}" pattern="#,###" /></span>
+      <%-- 관리자에게만 보이는 수정 버튼 (B-04). 실제 권한 검사는 AdminFilter 가 한다 --%>
+      <c:if test="${sessionScope.loginMember.admin}">
+        <a class="btn" href="${ctx}/admin/burgers/edit?id=${burger.id}">수정</a>
+      </c:if>
     </div>
     <c:url var="loginUrl" value="/login"><c:param name="next" value="/burgers/detail?id=${burger.id}" /></c:url>
     <p class="hint" id="like-login" hidden>추천하려면 로그인이 필요합니다. <a href="${loginUrl}" style="color:var(--brand)">로그인하러 가기</a></p>
