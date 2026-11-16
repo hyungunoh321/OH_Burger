@@ -40,7 +40,12 @@ public class AdminBurgerFormServlet extends HttpServlet {
             }
             List<Brand> brands = brandDao.findAll();
             // 세션이 만료돼 로그인을 다시 하고 돌아온 경우: 입력하던 내용을 되살린다
+            // 수정 화면이면 맡아 둔 내용이 이 버거의 것일 때만 쓴다 (다른 버거에 덮어쓰지 않게)
             Map<String, String[]> pending = PendingForm.take(req, req.getServletPath());
+            if (pending != null && burger != null
+                    && !String.valueOf(burger.getId()).equals(PendingForm.first(pending, "id"))) {
+                pending = null;
+            }
             if (pending != null) {
                 req.setAttribute("restored", true);
                 show(req, resp, burger, brands,
