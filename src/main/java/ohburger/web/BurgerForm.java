@@ -22,15 +22,18 @@ public class BurgerForm {
     public static final int DESCRIPTION_MAX = 500;
     public static final int IMAGE_URL_MAX = 255;
 
-    /** 숫자 칸: 이름 → {화면 표시 이름, 상한, 소수 자릿수}. DB 열의 범위에 맞춘다. */
+    /**
+     * 숫자 칸: 이름 → {화면 표시 이름, 하한, 상한, 소수 자릿수}. DB 열의 범위에 맞춘다.
+     * 가격 · 중량은 0 일 수 없으므로 1 부터 받는다(모르면 비워 둔다). 영양 성분은 0 일 수 있다.
+     */
     private static final Object[][] NUMBERS = {
-        {"price", "가격", 1_000_000, 0},
-        {"weightG", "중량", 5_000, 0},
-        {"caloriesKcal", "열량", 10_000, 0},
-        {"proteinG", "단백질", 999, 1},
-        {"satFatG", "포화지방", 999, 1},
-        {"sugarG", "당류", 999, 1},
-        {"sodiumMg", "나트륨", 100_000, 0},
+        {"price", "가격", 1, 1_000_000, 0},
+        {"weightG", "중량", 1, 5_000, 0},
+        {"caloriesKcal", "열량", 0, 10_000, 0},
+        {"proteinG", "단백질", 0, 999, 1},
+        {"satFatG", "포화지방", 0, 999, 1},
+        {"sugarG", "당류", 0, 999, 1},
+        {"sodiumMg", "나트륨", 0, 100_000, 0},
     };
 
     /** 입력 칸 이름 → 친 값 (화면에 그대로 다시 보여 준다). */
@@ -119,7 +122,7 @@ public class BurgerForm {
         }
 
         for (Object[] spec : NUMBERS) {
-            form.readNumber(params, (String) spec[0], (String) spec[1], (Integer) spec[2], (Integer) spec[3]);
+            form.readNumber(params, (String) spec[0], (String) spec[1], (Integer) spec[2], (Integer) spec[3], (Integer) spec[4]);
         }
         return form;
     }
@@ -127,11 +130,12 @@ public class BurgerForm {
     /** 문자열 칸 하나를 읽어 앞뒤 공백을 떼고 담는다. 없으면 빈 문자열. */
     private void read(Map<String, String[]> params, String name) {
         String v = PendingForm.first(params, name);
-        values.put(name, v == null ? "" : v.trim());
+        // 브라우저가 줄바꿈을 \r\n 으로 보내므로 글자 수가 달라지지 않게 \n 으로 맞춘다
+        values.put(name, v == null ? "" : v.replace("\r\n", "\n").trim());
     }
 
     /** 숫자 칸 하나를 읽는다. 비워 두면 값 없음(NULL), 숫자가 아니거나 범위를 벗어나면 오류. */
-    private void readNumber(Map<String, String[]> params, String name, String label, int max, int scale) {
+    private void readNumber(Map<String, String[]> params, String name, String label, int min, int max, int scale) {
         read(params, name);
         String v = values.get(name).replace(",", "");
         if (v.isEmpty()) {
@@ -139,10 +143,14 @@ public class BurgerForm {
         }
         String unit = scale == 0 ? "정수" : "숫자(소수 " + scale + "자리까지)";
         if (!v.matches(scale == 0 ? "\\d{1,9}" : "\\d{1,9}(\\.\\d{1," + scale + "})?")) {
-            errors.put(name, label + " 칸에는 0 이상의 " + unit + "만 입력해 주세요.");
+            errors.put(name, label + " 칸에는 " + min + " 이상의 " + unit + "만 입력해 주세요.");
             return;
         }
         BigDecimal n = new BigDecimal(v);
+        if (n.compareTo(BigDecimal.valueOf(min)) < 0) {
+            errors.put(name, label + " 칸에는 " + min + " 이상의 " + unit + "만 입력해 주세요.");
+            return;
+        }
         if (n.compareTo(BigDecimal.valueOf(max)) > 0) {
             errors.put(name, label + " 칸에는 " + String.format("%,d", max) + " 이하의 값을 입력해 주세요.");
             return;
