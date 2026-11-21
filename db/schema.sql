@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS post_burger;
 DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS burger_like;
 DROP TABLE IF EXISTS burger;
+DROP TABLE IF EXISTS side_menu;
 DROP TABLE IF EXISTS brand;
 DROP TABLE IF EXISTS member;
 
@@ -71,6 +72,30 @@ CREATE TABLE burger_like (
   KEY idx_burger_like_burger (burger_id),
   CONSTRAINT fk_burger_like_member FOREIGN KEY (member_id) REFERENCES member (member_id) ON DELETE CASCADE,
   CONSTRAINT fk_burger_like_burger FOREIGN KEY (burger_id) REFERENCES burger (burger_id) ON DELETE CASCADE
+) ENGINE = InnoDB;
+
+-- 사이드 메뉴 (사이드 · 치킨 · 디저트, 음료 제외). 열은 burger 와 같고 패티 종류 대신 종류(kind)를 둔다.
+-- 사이즈 · 조각 수가 여러 개인 메뉴는 기본 사이즈 한 줄만 넣는다 (DB설계.md 5번)
+CREATE TABLE side_menu (
+  side_id       INT           NOT NULL AUTO_INCREMENT,
+  brand_id      INT           NOT NULL,
+  name          VARCHAR(60)   NOT NULL,
+  description   VARCHAR(500)  NULL,
+  image_url     VARCHAR(255)  NULL,
+  kind          ENUM('SIDE', 'CHICKEN', 'DESSERT') NOT NULL DEFAULT 'SIDE' COMMENT '사이드 / 치킨 / 디저트',
+  price         INT           NULL COMMENT '단품 가격(원)',
+  weight_g      INT           NULL,
+  calories_kcal INT           NULL,
+  protein_g     DECIMAL(5, 1) NULL,
+  sat_fat_g     DECIMAL(5, 1) NULL,
+  sugar_g       DECIMAL(5, 1) NULL,
+  sodium_mg     INT           NULL,
+  view_count    INT           NOT NULL DEFAULT 0,
+  created_at    DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (side_id),
+  UNIQUE KEY uk_side_menu_brand_name (brand_id, name),
+  KEY idx_side_menu_kind (kind),
+  CONSTRAINT fk_side_menu_brand FOREIGN KEY (brand_id) REFERENCES brand (brand_id)
 ) ENGINE = InnoDB;
 
 -- 게시글
