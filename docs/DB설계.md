@@ -119,7 +119,9 @@ erDiagram
 
 기능 명세서 4.3의 규칙을 SQL로 옮긴 것. `RANK()` 는 값이 같으면 같은 순위를 준다.
 
-**단백질 티어** (열량 · 포화지방은 컬럼과 정렬 방향만 바꾼다. 낮을수록 좋은 지표는 `ASC`)
+**단백질 티어** (열량 · 포화지방은 컬럼과 정렬 방향만 바꾼다. 낮을수록 좋은 지표는 `ASC`.
+가성비는 `protein_g` 자리에 `ROUND(protein_g * 1000 / NULLIF(price, 0), 1)` 을 넣고 `DESC` 로 정렬한다.
+가격 · 단백질 중 하나라도 NULL 이면 식이 NULL 이 되어 `IS NOT NULL` 조건에서 빠진다)
 
 ```sql
 SELECT burger_id, name, protein_g,
