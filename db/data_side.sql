@@ -243,22 +243,22 @@ AS new ON DUPLICATE KEY UPDATE
 -- 가격: 공식 사이트에 없고 다른 출처에서도 확인하지 못해 NULL
 SET @b := (SELECT brand_id FROM brand WHERE name = '프랭크버거');
 INSERT INTO side_menu (brand_id, name, description, kind, price, weight_g, calories_kcal, protein_g, sat_fat_g, sugar_g, sodium_mg, image_url) VALUES
-  (@b, '프렌치 프라이', '크리스피 슈스트링 감자의 바삭함이 일품인 감자튀김', 'SIDE', NULL, 95, 285, 4.4, 2.0, 0.4, 295, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_en1.png'),
-  (@b, '치즈 프렌치 프라이', '바삭한 감자튀김에 꾸덕한 체다치즈가 더해져 깊은 풍미를 느낄 수 있는 치즈 감자튀김', 'SIDE', NULL, 145, 389, 11.4, 6.8, 1.2, 672, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_en2.png'),
-  (@b, '해쉬 포테이토', '바삭한 크런치함 속에 고소하고 담백한 포테이토 맛이 일품인 메뉴', 'SIDE', NULL, 51, 157, 1.6, 0.7, 0.1, 153, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_en26.png'),
-  (@b, '바삭 어니언링', '통양파를 크런치하게 튀겨 바삭함과 달콤함을 극대화한 어니언링', 'SIDE', NULL, 116, 399, 5.1, 4.3, 4.0, 393, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_en35.png'),
-  (@b, '오징어링 (3개)', '겉은 바삭하게 튀겨 쫄깃한 식감을 그대로 느낄 수 있는 오징어링', 'SIDE', NULL, 48, 183, 4.8, 1.8, 0.2, 256, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_en20.png'),
-  (@b, '치즈스틱 (3개)', '100% 모짜렐라 치즈로 속이 꽉 찬 바삭한 치즈스틱', 'SIDE', NULL, 75, 247, 8.5, 6.3, 1.2, 336, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_en_new4.png'),
-  (@b, '더 치즈볼 (3개)', '치즈의 고소함과 깊은 풍미가 가득한 치즈볼', 'SIDE', NULL, 90, 286, 9.4, 3.8, 8.9, 310, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_en7.png'),
-  (@b, '콘샐러드', '스위트콘의 톡톡튀는 식감과 달콤하고 고소한 맛의 조화 버거와 함께 먹으면 너무 잘 어울리는 콘샐러드', 'SIDE', NULL, 100, 140, 1.0, 1.2, 13.0, 370, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_en16.png'),
-  (@b, '코울슬로 샐러드', '양배추의 아삭아삭 신선함과 상큼한 맛이 일품인 코울슬로', 'SIDE', NULL, 100, 185, 1.0, 1.6, 18.0, 330, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_en17.png'),
-  (@b, '순살치킨 후라이드 (200g)', '껍질의 바삭함과 육즙 가득한 부드러운 속살을 동시에 느낄 수 있는 맛', 'CHICKEN', NULL, 140, 455, 19.6, 5.2, 1.9, 838, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_en28.png'),
-  (@b, '순살치킨 양념 (200g)', '특제 고추양념소스로 버무린 매콤달콤함의 정석을 느낄 수 있는 맛', 'CHICKEN', NULL, 166, 495, 28.8, 5.3, 12.0, 871, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_en31.png'),
-  (@b, '순살치킨 청양마요 (200g)', '매콤하고 크리미한 청양마요소스에 할라피뇨가 더해진 매력적인 맛', 'CHICKEN', NULL, 169, 525, 22.0, 5.9, 9.3, 942, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_en30.png'),
-  (@b, '자이언트 통닭다리', '거대한 닭다리 한쪽을 통째로 바삭하게 튀겨 육즙은 살리고 짭쪼름한 맛을 더한 통닭다리살', 'CHICKEN', NULL, 167, 368, 34.7, 4.6, 1.5, 935, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_en13.png'),
-  (@b, '치킨텐더 (2개)', '스파이시 시즈닝을 입힌 부드러운 닭안심살을 매콤 바삭하게 튀겨낸 치킨 텐더', 'CHICKEN', NULL, 60, 179, 9.4, 1.5, 1.1, 257, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_en6.png?1'),
-  (@b, '통가슴살 후라이드', '순살 닭가슴살을 납작하게 튀겨 겉은 바삭, 속은 촉촉하게 튀겨낸 치킨 파이 스타일', 'CHICKEN', NULL, 103, 284, 15.5, 2.8, 0.5, 780, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_en8.png'),
-  (@b, '버팔로윙봉 (4개)', '뉴욕 버팔로 스타일로 겉은 바삭, 속은 촉촉하게 튀겨 짭짤한 맛이 일품인 버팔로 치킨', 'CHICKEN', NULL, 132, 310, 32.8, 3.9, 4.0, 925, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_en11.png')
+  (@b, '프렌치 프라이', '크리스피 슈스트링 감자의 바삭함이 일품인 감자튀김', 'SIDE', NULL, 95, 285, 4.4, 2.0, 0.4, 295, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_img1.jpg'),
+  (@b, '치즈 프렌치 프라이', '바삭한 감자튀김에 꾸덕한 체다치즈가 더해져 깊은 풍미를 느낄 수 있는 치즈 감자튀김', 'SIDE', NULL, 145, 389, 11.4, 6.8, 1.2, 672, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_img2.jpg'),
+  (@b, '해쉬 포테이토', '바삭한 크런치함 속에 고소하고 담백한 포테이토 맛이 일품인 메뉴', 'SIDE', NULL, 51, 157, 1.6, 0.7, 0.1, 153, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_img26_noicon.jpg'),
+  (@b, '바삭 어니언링', '통양파를 크런치하게 튀겨 바삭함과 달콤함을 극대화한 어니언링', 'SIDE', NULL, 116, 399, 5.1, 4.3, 4.0, 393, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_img35.jpg'),
+  (@b, '오징어링 (3개)', '겉은 바삭하게 튀겨 쫄깃한 식감을 그대로 느낄 수 있는 오징어링', 'SIDE', NULL, 48, 183, 4.8, 1.8, 0.2, 256, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_img13.png'),
+  (@b, '치즈스틱 (3개)', '100% 모짜렐라 치즈로 속이 꽉 찬 바삭한 치즈스틱', 'SIDE', NULL, 75, 247, 8.5, 6.3, 1.2, 336, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_img4.jpg'),
+  (@b, '더 치즈볼 (3개)', '치즈의 고소함과 깊은 풍미가 가득한 치즈볼', 'SIDE', NULL, 90, 286, 9.4, 3.8, 8.9, 310, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_img7.jpg'),
+  (@b, '콘샐러드', '스위트콘의 톡톡튀는 식감과 달콤하고 고소한 맛의 조화 버거와 함께 먹으면 너무 잘 어울리는 콘샐러드', 'SIDE', NULL, 100, 140, 1.0, 1.2, 13.0, 370, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_img16.jpg'),
+  (@b, '코울슬로 샐러드', '양배추의 아삭아삭 신선함과 상큼한 맛이 일품인 코울슬로', 'SIDE', NULL, 100, 185, 1.0, 1.6, 18.0, 330, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_img17.jpg'),
+  (@b, '순살치킨 후라이드 (200g)', '껍질의 바삭함과 육즙 가득한 부드러운 속살을 동시에 느낄 수 있는 맛', 'CHICKEN', NULL, 140, 455, 19.6, 5.2, 1.9, 838, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_img28.jpg'),
+  (@b, '순살치킨 양념 (200g)', '특제 고추양념소스로 버무린 매콤달콤함의 정석을 느낄 수 있는 맛', 'CHICKEN', NULL, 166, 495, 28.8, 5.3, 12.0, 871, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_img31.jpg'),
+  (@b, '순살치킨 청양마요 (200g)', '매콤하고 크리미한 청양마요소스에 할라피뇨가 더해진 매력적인 맛', 'CHICKEN', NULL, 169, 525, 22.0, 5.9, 9.3, 942, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_img30.jpg'),
+  (@b, '자이언트 통닭다리', '거대한 닭다리 한쪽을 통째로 바삭하게 튀겨 육즙은 살리고 짭쪼름한 맛을 더한 통닭다리살', 'CHICKEN', NULL, 167, 368, 34.7, 4.6, 1.5, 935, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_img13.jpg'),
+  (@b, '치킨텐더 (2개)', '스파이시 시즈닝을 입힌 부드러운 닭안심살을 매콤 바삭하게 튀겨낸 치킨 텐더', 'CHICKEN', NULL, 60, 179, 9.4, 1.5, 1.1, 257, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_img6.jpg'),
+  (@b, '통가슴살 후라이드', '순살 닭가슴살을 납작하게 튀겨 겉은 바삭, 속은 촉촉하게 튀겨낸 치킨 파이 스타일', 'CHICKEN', NULL, 103, 284, 15.5, 2.8, 0.5, 780, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_img8.jpg'),
+  (@b, '버팔로윙봉 (4개)', '뉴욕 버팔로 스타일로 겉은 바삭, 속은 촉촉하게 튀겨 짭짤한 맛이 일품인 버팔로 치킨', 'CHICKEN', NULL, 132, 310, 32.8, 3.9, 4.0, 925, 'https://frankburger.co.kr/img/page/2022_menu/01/menu2_img11.jpg')
 AS new ON DUPLICATE KEY UPDATE
   description = new.description, kind = new.kind, price = new.price, weight_g = new.weight_g,
   calories_kcal = new.calories_kcal, protein_g = new.protein_g, sat_fat_g = new.sat_fat_g,
