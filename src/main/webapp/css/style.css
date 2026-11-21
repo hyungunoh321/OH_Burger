@@ -187,7 +187,7 @@ label.field > span.hint, label.field > span.error { font-weight: 400; margin: 6p
 .nutri th, .nutri td { padding: 10px 4px; border-bottom: 1px solid var(--line); text-align: left; }
 .nutri th { color: var(--muted); font-weight: 400; width: 40%; }
 .nutri td { font-weight: 600; }
-.tier-badges { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 18px 0; }
+.tier-badges { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 18px 0; }
 .tier-badges > div { text-align: center; padding: 12px 4px; background: var(--soft); border-radius: 14px; font-size: 13px; color: var(--muted); }
 .tier-badges .badge { display: flex; margin: 6px auto 0; width: 36px; height: 36px; font-size: 18px; border-radius: 10px; }
 .tier-badges .badge.none { width: fit-content; font-size: 12px; }
@@ -249,6 +249,8 @@ label.field > span.hint, label.field > span.error { font-weight: 400; margin: 6p
   .tier-item .thumb { display: none; }
   .tier-item { padding: 8px 10px; }
   .list .hide-sm { display: none; }
-  .tier-badges { grid-template-columns: repeat(2, 1fr); }
+  .tier-badges { grid-template-columns: repeat(3, 1fr); }
+  .tabs { gap: 2px; }
+  .tab { padding: 9px 10px; } /* 티어표 탭 5개가 스크롤 없이 한 줄에 들어가게 */
   .narrow { padding: 24px; }
 }

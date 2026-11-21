@@ -62,7 +62,7 @@ public class TierDao {
     }
 
     /**
-     * 버거 한 종의 티어 4종을 돌려준다. 키는 Metric 의 key, 값은 S ~ D.
+     * 버거 한 종의 티어 5종을 돌려준다. 키는 Metric 의 key, 값은 S ~ D.
      * 티어가 없는 기준(영양 정보 없음, 인기 점수 0)은 맵에 들어가지 않는다.
      */
     public Map<String, String> tiersOf(int burgerId) throws SQLException {

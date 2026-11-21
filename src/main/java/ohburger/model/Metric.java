@@ -1,8 +1,9 @@
 package ohburger.model;
 
 /**
- * 티어표 4종의 기준 (기능 명세서 4.3).
+ * 티어표 5종의 기준 (기능 명세서 4.3).
  * sqlExpr 는 burger b 를 기준으로 한 기준 값 식이며, 코드에 고정된 값이라 SQL 에 그대로 붙여도 안전하다.
+ * 식의 값이 NULL 인 버거는 그 티어표에서 빠진다.
  */
 public enum Metric {
 
@@ -13,7 +14,11 @@ public enum Metric {
             true, true),
     PROTEIN("protein", "단백질", "g", "단백질이 많을수록 상위", "b.protein_g", true, false),
     KCAL("kcal", "열량", "kcal", "열량이 낮을수록 상위", "b.calories_kcal", false, false),
-    SATFAT("satfat", "포화지방", "g", "포화지방이 낮을수록 상위", "b.sat_fat_g", false, false);
+    SATFAT("satfat", "포화지방", "g", "포화지방이 낮을수록 상위", "b.sat_fat_g", false, false),
+    // 1,000원당 단백질(g). 화면에 보이는 값(소수 1자리)으로 순위를 매기도록 식에서 반올림한다.
+    // 가격 · 단백질 중 하나라도 NULL 이면 NULL 이 되어 대상에서 빠진다.
+    VALUE("value", "가성비", "g/천원", "1,000원당 단백질이 많을수록 상위 (가격이 공개된 버거만)",
+            "ROUND(b.protein_g * 1000 / NULLIF(b.price, 0), 1)", true, false);
 
     private final String key;
     private final String label;

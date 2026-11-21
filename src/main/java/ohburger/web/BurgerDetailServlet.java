@@ -19,7 +19,7 @@ import ohburger.model.Burger;
 import ohburger.model.LoginMember;
 import ohburger.model.Metric;
 
-/** 버거 상세 (B-02): 기본 · 영양 정보, 티어 배지 4종, 추천 상태, 태그된 게시글 상위 5개. */
+/** 버거 상세 (B-02): 기본 · 영양 정보, 티어 배지 5종, 추천 상태, 태그된 게시글 상위 5개. */
 @WebServlet("/burgers/detail")
 public class BurgerDetailServlet extends HttpServlet {
 
