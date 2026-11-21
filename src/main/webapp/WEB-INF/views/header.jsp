@@ -14,7 +14,8 @@
 <header class="site-header"><div class="container">
   <a class="logo" href="${ctx}/home">OH <span>Burger</span></a>
   <nav class="nav">
-    <a href="${ctx}/home" class="${param.menu eq 'tier' ? 'active' : ''}">티어표</a>
+    <a href="${ctx}/home" class="${param.menu eq 'tier' ? 'active' : ''}">버거 티어표</a>
+    <a href="${ctx}/sides/tier" class="${param.menu eq 'sideTier' ? 'active' : ''}">사이드 티어표</a>
     <a href="${ctx}/burgers" class="${param.menu eq 'burgers' ? 'active' : ''}">버거 도감</a>
     <a href="${ctx}/posts" class="${param.menu eq 'posts' ? 'active' : ''}">게시판</a>
     <a href="${ctx}/roulette" class="${param.menu eq 'roulette' ? 'active' : ''}">룰렛</a>
