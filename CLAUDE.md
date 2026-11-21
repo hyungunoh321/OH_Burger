@@ -64,6 +64,7 @@ cp src/main/java/db.properties build/classes/
 - **가격은 107종에 있고 53종이 NULL**이다. 롯데리아 · KFC 는 공식 사이트 값, 맥도날드 · 버거킹 · 맘스터치 · 노브랜드버거(2종)는 나무위키 · 기사에서 옮긴 매장 가격이라 최신 값과 다를 수 있다(출처는 `data_burger.sql` 주석). NULL 은 화면에 "가격 정보 없음", 가격 정렬은 맨 뒤, 룰렛 가격 조건에서는 제외. 남은 목록은 `db/prices_todo.csv`.
 - `image_url` 은 160종 모두 브랜드 공식 사이트의 제품 사진 주소다(파일은 저장하지 않음). 화면에서는 `<t:thumb url="..." />`(`WEB-INF/tags/thumb.tag`)로 그리고, 사진을 못 불러오면 CSS 로 그린 버거 표시(`.thumb`)가 대신 보인다. 인터넷이 없으면 사진이 안 뜬다.
 - 맘스터치 · KFC · 노브랜드버거 · 프랭크버거의 영양 정보는 이미지 표를 눈으로 읽어 옮긴 값이다. 2026-11-15 에 72종을 표와 다시 대조했고 다른 값은 없었다.
+- 사이드 메뉴(사이드 · 치킨 · 디저트, 음료 제외) 146종이 `side_menu` 테이블과 `db/data_side.sql` 에 있다. 공식 홈페이지에서 2026-11-21 조회. 넣는 기준(사이즈 · 조각 수는 한 줄만 등)은 `docs/DB설계.md` 5번. 가격은 75종(롯데리아 · KFC 공식, 맥도날드 · 버거킹 나무위키), 맘스터치 · KFC 치킨의 100g 당 값은 총중량을 곱해 계산했고 식이 SQL 에 남아 있다. 화면은 아직 없다.
 - 값을 지어내서 채우지 않는다. 모르는 값은 NULL 로 둔다.
 
 ## 남은 일 (순서대로)
@@ -100,6 +101,10 @@ cp src/main/java/db.properties build/classes/
 끝난 것: 마이페이지(M-03, `/mypage`) (#11). 머리글의 닉네임이 마이페이지 링크다.
 
 끝난 것: 관리자 버거 관리(B-04, `/admin/burgers`, `/admin/burgers/new`, `/admin/burgers/edit`, `/admin/burgers/delete`) (#12). `/admin/*` 는 `AdminFilter` 가 관리자가 아니면 403 으로 거절하므로 관리자 주소를 새로 만들 때 서블릿에서 따로 검사하지 않아도 된다. 등록 · 수정은 `burger_form.jsp` 와 `BurgerForm`(입력 검사)을 함께 쓴다. 관리자 계정은 회원가입 뒤 root 로 `UPDATE member SET role = 'ADMIN' WHERE login_id = '...'` 해서 만든다. `data_burger.sql` 을 다시 실행하면 화면에서 고친 값이 SQL 의 값으로 덮어쓰인다.
+
+끝난 것: 티어표 가성비 탭(1,000원당 단백질) (#29). 티어 기준은 `ohburger.model.Metric` 에 한 줄 추가하면 티어표 탭과 버거 상세 배지에 함께 붙는다.
+
+끝난 것: 사이드 메뉴 데이터(`side_menu` 테이블, `db/data_side.sql`) (#31). 화면(목록 · 상세)은 아직 없다.
 
 ## 작업 방식
 

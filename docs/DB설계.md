@@ -16,6 +16,7 @@ erDiagram
     member ||--o{ burger_like : "추천"
     member ||--o{ post_like : "추천"
     brand ||--o{ burger : "보유"
+    brand ||--o{ side_menu : "보유"
     burger ||--o{ burger_like : "추천받음"
     burger ||--o{ post_burger : "태그됨"
     post ||--o{ post_burger : "태그"
@@ -43,6 +44,23 @@ erDiagram
         varchar description
         varchar image_url
         enum patty_type
+        int price
+        int weight_g
+        int calories_kcal
+        decimal protein_g
+        decimal sat_fat_g
+        decimal sugar_g
+        int sodium_mg
+        int view_count
+        datetime created_at
+    }
+    side_menu {
+        int side_id PK
+        int brand_id FK
+        varchar name
+        varchar description
+        varchar image_url
+        enum kind
         int price
         int weight_g
         int calories_kcal
@@ -93,6 +111,7 @@ erDiagram
 | `member` | 회원 계정과 권한 | M-01, M-02 |
 | `brand` | 브랜드 7곳 | B-01, T-02, R-01 |
 | `burger` | 버거 기본 정보와 영양 정보 | B-01, B-02, T-01, R-01 |
+| `side_menu` | 사이드 메뉴(사이드 · 치킨 · 디저트) 기본 정보와 영양 정보 | 화면은 아직 없음 (#31 에서 데이터만 추가) |
 | `burger_like` | 버거 추천 (회원 × 버거) | B-03, 인기 티어 |
 | `post` | 게시글 | P-01 ~ P-04 |
 | `post_burger` | 게시글에 태그된 버거 (글 × 버거) | P-03, B-02, 인기 티어 |
@@ -108,6 +127,8 @@ erDiagram
 - **영양 정보는 NULL 허용**: 브랜드가 공개하지 않은 항목은 NULL로 두고, 해당 티어표에서 제외한다.
 - **티어는 저장하지 않음**: 조회할 때 SQL로 계산한다 (4번 참고).
 - **분류 · 패티 · 권한은 ENUM**: 값이 고정돼 있어 별도 테이블을 두지 않는다. Java 쪽 enum과 1:1로 맞춘다.
+- **사이드 메뉴는 `burger` 와 다른 테이블**: 같은 테이블에 넣으면 티어표 · 도감 · 룰렛 쿼리마다 버거만 고르는 조건을 붙여야 하고,
+  하나라도 빠지면 감자튀김이 버거 순위에 섞인다. 열은 `burger` 와 같게 두고 패티 종류 자리에 종류(`kind`: 사이드 / 치킨 / 디저트)를 둔다.
 - **삭제 규칙**
   - 게시글 삭제 → 댓글 · 추천 · 버거 태그 함께 삭제 (`ON DELETE CASCADE`)
   - 버거 삭제 → 추천 · 태그 함께 삭제. 태그됐던 게시글은 남는다
@@ -177,4 +198,14 @@ ORDER BY p, name;
     나무위키 · 기사에서 옮긴 매장 가격이라 최신 값과 다를 수 있다(출처는 `data_burger.sql` 주석). 확인하지 못한 53종은 NULL
   - 이미지 주소(`image_url`)는 브랜드 공식 사이트의 제품 사진 주소다. 파일은 저장하지 않고 화면에서 그 주소를 바로 불러온다
   - 패티 종류는 공식 분류가 아니라 메뉴명 · 설명을 보고 정한 값
+- 사이드 메뉴 데이터는 [db/data_side.sql](../db/data_side.sql) (각 브랜드 공식 홈페이지에서 2026-11-21 조회, `schema.sql` 다음에 실행)
+  - 넣는 것: 음료를 뺀 사이드 · 치킨 · 디저트, 노브랜드버거 샐러드
+  - 빼는 것: 소스 · 시즈닝 · 잼 · 치킨무, 세트 · 박스 · 1+1 행사 · 버킷, 쉐이크 · 플로트, 맘스터치 피자 · 또잇(포장 간편식)
+  - 사이즈 · 조각 수가 여러 개인 메뉴는 한 줄만 넣는다. 감자튀김은 기본 사이즈(M · R), 너겟 · 윙 · 텐더는 단독으로 살 수 있는 가장 작은 단위
+  - 순살 · 뼈가 따로 있는 치킨은 한 줄로 합치고 영양 정보가 있는 쪽을 넣는다
+  - 146종 (맥도날드 20, 버거킹 19, 롯데리아 28, 맘스터치 30, KFC 14, 노브랜드버거 19, 프랭크버거 16)
+  - 가격은 75종에 있다. 롯데리아 · KFC 는 공식 값, 맥도날드 · 버거킹은 나무위키의 매장 가격, 맘스터치 · 노브랜드버거 · 프랭크버거는 NULL
+  - 맘스터치 치킨처럼 표에 100g 당 값만 있는 메뉴는 총중량을 곱해 계산했고, 계산식을 `data_side.sql` 에 그대로 적어 두었다.
+    열량 범위만 공개된 롯데리아 6종과 조각 무게를 모르는 KFC 치킨 1조각 4종은 열량이 NULL
+  - 이미 만들어 둔 DB에는 `schema.sql` 전체를 다시 실행하지 말고 `CREATE TABLE side_menu` 부분만 실행한다 (전체를 실행하면 회원 · 글이 지워진다)
 - 관리자 계정은 회원가입 후 `UPDATE member SET role = 'ADMIN' WHERE login_id = '...'` 로 지정
