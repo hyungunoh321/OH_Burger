@@ -65,8 +65,14 @@ OH_Burger/
 mysql -u root -p --default-character-set=utf8mb4 -e "source db/schema.sql"
 ```
 
+버거와 사이드 메뉴 데이터를 넣는다. 둘 다 `schema.sql` 이 넣은 브랜드를 쓰므로 그 다음에 실행한다.
+
 ```bash
 mysql -u root -p --default-character-set=utf8mb4 -e "source db/data_burger.sql"
+```
+
+```bash
+mysql -u root -p --default-character-set=utf8mb4 -e "source db/data_side.sql"
 ```
 
 웹 앱이 쓸 전용 계정을 만든다.
