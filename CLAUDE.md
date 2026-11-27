@@ -48,7 +48,7 @@ cp src/main/java/db.properties build/classes/
 - DB 이름 `oh_burger`, MySQL 8.4, 포트 3306. `mysql` 실행 파일은 `C:\Program Files\MySQL\MySQL Server 8.4\bin`.
 - 웹 앱은 전용 계정 `ohburger` 로 접속한다 (조회 · 추가 · 수정 · 삭제 권한만). 접속 정보는 `src/main/java/db.properties` (Git 제외).
 - 테이블을 바꾸거나 권한이 필요한 작업은 root 로 한다. root 접속 정보는 `CLAUDE.local.md` 에 있다 (Git 제외).
-- 스키마를 바꾸면 `db/schema.sql` 과 `docs/DB설계.md` 를 함께 고친다. `schema.sql` 을 다시 실행하면 테이블이 전부 지워지므로 `data_burger.sql` 도 다시 넣어야 한다.
+- 스키마를 바꾸면 `db/schema.sql` 과 `docs/DB설계.md` 를 함께 고친다. `schema.sql` 을 다시 실행하면 테이블이 전부 지워지므로 `data_burger.sql` · `data_side.sql` 도 다시 넣어야 한다.
 - 한글이 깨지지 않게 `--default-character-set=utf8mb4` 를 붙인다.
 
 ## 이클립스 관련 (겪은 문제)
