@@ -75,6 +75,13 @@ mysql -u root -p --default-character-set=utf8mb4 -e "source db/data_burger.sql"
 mysql -u root -p --default-character-set=utf8mb4 -e "source db/data_side.sql"
 ```
 
+(선택) 시연용 예시 데이터를 넣는다. 가상의 회원 · 게시글 · 댓글 · 추천이며 `data_burger.sql` 다음에 실행한다.
+시연용 계정의 아이디 · 비밀번호는 파일 머리말에 있다. 넣지 않아도 앱은 동작한다.
+
+```bash
+mysql -u root -p --default-character-set=utf8mb4 -e "source db/data_demo.sql"
+```
+
 웹 앱이 쓸 전용 계정을 만든다.
 
 ```sql
